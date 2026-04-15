@@ -1,31 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { api } from '@/lib/api';
+import { useState } from 'react';
 import type { Department } from '@/lib/types';
+import { api } from '@/lib/api';
 import Modal from '@/components/Modal';
+import { useDepartmentList } from '@/lib/departaments/use-helpdesk-list';
 
 export default function GestionDepartamentos() {
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { state, load } = useDepartmentList();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Department | null>(null);
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [saving, setSaving] = useState(false);
-
-  async function load() {
-    try {
-      const data = await api.getDepartments();
-      setDepartments(data);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, []);
 
   function openModal(dept?: Department) {
     setEditing(dept || null);
@@ -34,19 +22,32 @@ export default function GestionDepartamentos() {
     setModalOpen(true);
   }
 
+  function closeModal() {
+    setModalOpen(false);
+    setEditing(null);
+    setNombre('');
+    setDescripcion('');
+  }
+
   async function handleSave() {
     if (!nombre.trim()) return;
+
     setSaving(true);
     try {
       if (editing) {
-        await api.updateDepartment(editing.id, { nombre: nombre.trim(), descripcion: descripcion.trim(), activo: editing.activo });
+        await api.updateDepartment(editing.id, {
+          nombre: nombre.trim(),
+          descripcion: descripcion.trim(),
+          activo: editing.activo,
+        });
       } else {
-        await api.createDepartment({ nombre: nombre.trim(), descripcion: descripcion.trim() });
+        await api.createDepartment({
+          nombre: nombre.trim(),
+          descripcion: descripcion.trim(),
+        });
       }
-      setModalOpen(false);
-      setNombre('');
-      setDescripcion('');
-      setEditing(null);
+
+      closeModal();
       await load();
     } catch {
       alert('Error al guardar departamento');
@@ -57,14 +58,17 @@ export default function GestionDepartamentos() {
 
   async function handleToggle(dept: Department) {
     try {
-      await api.updateDepartment(dept.id, { ...dept, activo: !dept.activo });
+      await api.updateDepartment(dept.id, {
+        ...dept,
+        activo: !dept.activo,
+      });
       await load();
     } catch {
       alert('Error al cambiar estado');
     }
   }
 
-  if (loading) {
+  if (state.loading) {
     return (
       <div className="flex justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
@@ -75,7 +79,9 @@ export default function GestionDepartamentos() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Gestion de Departamentos</h1>
+        <h1 className="text-2xl font-bold text-slate-900">
+          Gestion de Departamentos
+        </h1>
         <button
           onClick={() => openModal()}
           className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
@@ -83,6 +89,12 @@ export default function GestionDepartamentos() {
           Nuevo Departamento
         </button>
       </div>
+
+      {state.error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {state.error}
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <table className="w-full text-sm">
@@ -95,22 +107,28 @@ export default function GestionDepartamentos() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {departments.length === 0 ? (
+            {state.items.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-4 py-8 text-center text-slate-400">
                   No hay departamentos
                 </td>
               </tr>
             ) : (
-              departments.map((dept) => (
+              state.items.map((dept) => (
                 <tr key={dept.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 font-medium text-slate-800">{dept.nombre}</td>
-                  <td className="px-4 py-3 text-slate-600">{dept.descripcion || '-'}</td>
+                  <td className="px-4 py-3 font-medium text-slate-800">
+                    {dept.nombre}
+                  </td>
+                  <td className="px-4 py-3 text-slate-600">
+                    {dept.descripcion || '-'}
+                  </td>
                   <td className="px-4 py-3">
                     <button
                       onClick={() => handleToggle(dept)}
                       className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                        dept.activo ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
+                        dept.activo
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-slate-100 text-slate-500'
                       }`}
                     >
                       {dept.activo ? 'Activo' : 'Inactivo'}
@@ -133,12 +151,14 @@ export default function GestionDepartamentos() {
 
       <Modal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={closeModal}
         title={editing ? 'Editar Departamento' : 'Nuevo Departamento'}
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Nombre
+            </label>
             <input
               type="text"
               value={nombre}
@@ -147,8 +167,11 @@ export default function GestionDepartamentos() {
               required
             />
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Descripcion</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Descripcion
+            </label>
             <textarea
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
@@ -156,8 +179,12 @@ export default function GestionDepartamentos() {
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
+
           <div className="flex justify-end gap-2">
-            <button onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm text-slate-600">
+            <button
+              onClick={closeModal}
+              className="px-4 py-2 text-sm text-slate-600"
+            >
               Cancelar
             </button>
             <button

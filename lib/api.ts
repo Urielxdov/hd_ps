@@ -1,6 +1,6 @@
-import { HelpDesk, PaginatedResponse } from './helpdesk/types';
+import { Department, PaginatedResponse } from './departaments/types';
+import { HelpDesk, PaginatedResponseHD } from './helpdesk/types';
 import type {
-  Department,
   ServiceCategory,
   Service,
   HDAttachment,
@@ -52,8 +52,11 @@ class ApiClient {
   }
 
   // Departments
-  async getDepartments(): Promise<Department[]> {
-    return this.request('/departments/');
+  async getDepartments(
+    params?: Record<string, string>
+  ): Promise<PaginatedResponse<Department>> {
+    const query = params ? '?' + new URLSearchParams(params).toString() : '';
+    return this.request(`/departments/${query}`);
   }
 
   async createDepartment(data: Partial<Department>): Promise<Department> {
@@ -115,7 +118,7 @@ class ApiClient {
   // Help Desks
   async getHelpDesks(
     params?: Record<string, string>
-  ): Promise<PaginatedResponse<HelpDesk>> {
+  ): Promise<PaginatedResponseHD<HelpDesk>> {
     const query = params ? '?' + new URLSearchParams(params).toString() : '';
     return this.request(`/helpdesks/${query}`);
   }

@@ -21,7 +21,7 @@ export interface HelpDesk {
   updated_at: string;
 }
 
-export type PaginatedResponse<T> = {
+export type PaginatedResponseHD<T> = {
   count: number;
   next: string | null;
   previous: string | null;
@@ -29,8 +29,8 @@ export type PaginatedResponse<T> = {
 };
 
 export type HelpDeskFilters = {
-  estado: string;
-  prioridad: string;
+  estado: Estado | string;
+  prioridad: Prioridad | string;
   responsable_id: string;
 };
 
@@ -48,7 +48,7 @@ export type HelpDeskListAction =
   | { type: 'LOAD_START' }
   | {
       type: 'LOAD_SUCCESS';
-      payload: PaginatedResponse<HelpDesk>;
+      payload: PaginatedResponseHD<HelpDesk>;
     }
   | {
       type: 'LOAD_ERROR';
