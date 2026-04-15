@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
-import type { HelpDesk, Estado } from '@/lib/types';
+import type { Estado } from '@/lib/types';
 import HDTable from '@/components/HDTable';
+import { HelpDesk } from '@/lib/helpdesk/types';
+import { useHelpDeskList } from '@/lib/helpdesk/use-helpdesk-list';
 
 const ESTADO_FILTERS: { value: string; label: string }[] = [
   { value: '', label: 'Todos' },
@@ -16,21 +18,9 @@ const ESTADO_FILTERS: { value: string; label: string }[] = [
 ];
 
 export default function MisHelpDesks() {
-  const [helpdesks, setHelpdesks] = useState<HelpDesk[]>([]);
+  const { state, load } = useHelpDeskList();
   const [loading, setLoading] = useState(true);
   const [estadoFilter, setEstadoFilter] = useState('');
-
-  async function load() {
-    setLoading(true);
-    try {
-      const params: Record<string, string> = {};
-      if (estadoFilter) params.estado = estadoFilter;
-      const data = await api.getHelpDesks(params);
-      setHelpdesks(data);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   useEffect(() => {
     load();
@@ -70,7 +60,7 @@ export default function MisHelpDesks() {
         </div>
       ) : (
         <HDTable
-          helpdesks={helpdesks}
+          helpdesks={state.items}
           basePath="/helpdesks"
           showTechnician
         />

@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { api } from '@/lib/api';
-import type { HelpDesk, Estado } from '@/lib/types';
 import HDTable from '@/components/HDTable';
+import { useHelpDeskList } from '@/lib/helpdesk/use-helpdesk-list';
 
 const ESTADO_FILTERS = [
   { value: '', label: 'Todos' },
@@ -23,43 +21,23 @@ const PRIORIDAD_FILTERS = [
 ];
 
 export default function PanelArea() {
-  const [helpdesks, setHelpdesks] = useState<HelpDesk[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [estadoFilter, setEstadoFilter] = useState('');
-  const [prioridadFilter, setPrioridadFilter] = useState('');
-  const [tecnicoFilter, setTecnicoFilter] = useState('');
+  const { state, setFilter } = useHelpDeskList();
 
-  async function load() {
-    setLoading(true);
-    try {
-      const params: Record<string, string> = {};
-      if (estadoFilter) params.estado = estadoFilter;
-      if (prioridadFilter) params.prioridad = prioridadFilter;
-      if (tecnicoFilter) params.responsable_id = tecnicoFilter;
-      const data = await api.getHelpDesks(params);
-      setHelpdesks(data);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, [estadoFilter, prioridadFilter, tecnicoFilter]);
-
-  // Summary cards
-  const abiertos = helpdesks.filter((h) => h.estado === 'abierto').length;
-  const enProgreso = helpdesks.filter((h) => h.estado === 'en_progreso').length;
+  const abiertos = state.items.filter((h) => h.estado === 'abierto').length;
+  const enProgreso = state.items.filter((h) => h.estado === 'en_progreso').length;
   const hoy = new Date().toDateString();
-  const resueltosHoy = helpdesks.filter(
-    (h) => h.estado === 'resuelto' && h.fecha_efectividad && new Date(h.fecha_efectividad).toDateString() === hoy
+
+  const resueltosHoy = state.items.filter(
+    (h) =>
+      h.estado === 'resuelto' &&
+      h.fecha_efectividad &&
+      new Date(h.fecha_efectividad).toDateString() === hoy
   ).length;
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-slate-900">Panel del Area</h1>
 
-      {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
           <p className="text-sm text-slate-500">Abiertos</p>
@@ -75,7 +53,6 @@ export default function PanelArea() {
         </div>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-4">
         <div>
           <label className="block text-xs text-slate-500 mb-1">Estado</label>
@@ -83,9 +60,11 @@ export default function PanelArea() {
             {ESTADO_FILTERS.map((f) => (
               <button
                 key={f.value}
-                onClick={() => setEstadoFilter(f.value)}
+                onClick={() => setFilter('estado', f.value)}
                 className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                  estadoFilter === f.value ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
+                  state.filters.estado === f.value
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 {f.label}
@@ -93,15 +72,18 @@ export default function PanelArea() {
             ))}
           </div>
         </div>
+
         <div>
           <label className="block text-xs text-slate-500 mb-1">Prioridad</label>
           <div className="flex gap-1">
             {PRIORIDAD_FILTERS.map((f) => (
               <button
                 key={f.value}
-                onClick={() => setPrioridadFilter(f.value)}
+                onClick={() => setFilter('prioridad', f.value)}
                 className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                  prioridadFilter === f.value ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
+                  state.filters.prioridad === f.value
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 {f.label}
@@ -109,26 +91,27 @@ export default function PanelArea() {
             ))}
           </div>
         </div>
+
         <div>
           <label className="block text-xs text-slate-500 mb-1">Tecnico (ID)</label>
           <input
             type="number"
             min="1"
-            value={tecnicoFilter}
-            onChange={(e) => setTecnicoFilter(e.target.value)}
+            value={state.filters.responsable_id}
+            onChange={(e) => setFilter('responsable_id', e.target.value)}
             placeholder="Todos"
             className="w-24 px-2 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
       </div>
 
-      {loading ? (
+      {state.loading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
         </div>
       ) : (
         <HDTable
-          helpdesks={helpdesks}
+          helpdesks={state.items}
           basePath="/area/helpdesks"
           showTechnician
           showPriority

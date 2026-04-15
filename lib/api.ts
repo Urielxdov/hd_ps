@@ -1,13 +1,13 @@
+import { HelpDesk, PaginatedResponse } from './helpdesk/types';
 import type {
   Department,
   ServiceCategory,
   Service,
-  HelpDesk,
   HDAttachment,
   HDComment,
 } from './types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 class ApiClient {
   private token: string | null = null;
@@ -44,7 +44,7 @@ class ApiClient {
   }
 
   // Auth
-  async login(userId: number, role: string): Promise<{ token: string }> {
+  async login(userId: number, role: string): Promise<{ access: string }> {
     return this.request('/auth/token/', {
       method: 'POST',
       body: JSON.stringify({ user_id: userId, role }),
@@ -113,7 +113,9 @@ class ApiClient {
   }
 
   // Help Desks
-  async getHelpDesks(params?: Record<string, string>): Promise<HelpDesk[]> {
+  async getHelpDesks(
+    params?: Record<string, string>
+  ): Promise<PaginatedResponse<HelpDesk>> {
     const query = params ? '?' + new URLSearchParams(params).toString() : '';
     return this.request(`/helpdesks/${query}`);
   }

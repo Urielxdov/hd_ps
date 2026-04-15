@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import type { HelpDesk, Estado } from '@/lib/types';
+import type { Estado } from '@/lib/types';
 import { ESTADO_LABELS, VALID_TRANSITIONS } from '@/lib/types';
 import { EstadoBadge, PrioridadBadge } from './HDBadge';
+import { HelpDesk } from '@/lib/helpdesk/types';
 
 interface HDTableProps {
   helpdesks: HelpDesk[];
@@ -22,6 +23,7 @@ export default function HDTable({
   onQuickStatusChange,
   technicianSelector,
 }: HDTableProps) {
+  console.log(helpdesks)
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       <div className="overflow-x-auto">
