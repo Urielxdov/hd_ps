@@ -77,6 +77,10 @@ class ApiClient {
     return this.request(`/departments/${departmentId}/categories/`);
   }
 
+  async getDepartmentServices(departmentId: number): Promise<Service[]> {
+    return this.request(`/departments/${departmentId}/services/`);
+  }
+
   // Service Categories
   async createServiceCategory(data: { nombre: string; department: number }): Promise<ServiceCategory> {
     return this.request('/service-categories/', {
