@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { api } from '@/lib/api';
-import type { Department, ServiceCategory, Service } from '@/lib/types';
+import type { ServiceCategory, Service } from '@/lib/types';
 import Modal from '@/components/Modal';
+import { useDepartmentList } from '@/lib/departaments/use-helpdesk-list';
 
 export default function GestionCatalogo() {
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { state, load } = useDepartmentList();
 
   // Expanded state
   const [expandedDept, setExpandedDept] = useState<number | null>(null);
@@ -18,25 +18,18 @@ export default function GestionCatalogo() {
   const [services, setServices] = useState<Record<number, Service[]>>({});
 
   // Modals
-  const [catModal, setCatModal] = useState<{ open: boolean; deptId: number; editing?: ServiceCategory }>({ open: false, deptId: 0 });
-  const [serviceModal, setServiceModal] = useState<{ open: boolean; catId: number; editing?: Service }>({ open: false, catId: 0 });
+  const [catModal, setCatModal] = useState<{ open: boolean; deptId: number; editing?: ServiceCategory }>({
+    open: false,
+    deptId: 0,
+  });
+  const [serviceModal, setServiceModal] = useState<{ open: boolean; catId: number; editing?: Service }>({
+    open: false,
+    catId: 0,
+  });
   const [catName, setCatName] = useState('');
   const [serviceName, setServiceName] = useState('');
   const [serviceDesc, setServiceDesc] = useState('');
   const [serviceTiempo, setServicioTiempo] = useState('1');
-
-  async function loadDepartments() {
-    try {
-      const data = await api.getDepartments();
-      setDepartments(data);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    loadDepartments();
-  }, []);
 
   async function loadCategories(deptId: number) {
     const data = await api.getDepartmentCategories(deptId);
@@ -53,7 +46,9 @@ export default function GestionCatalogo() {
       setExpandedDept(null);
     } else {
       setExpandedDept(deptId);
-      if (!categories[deptId]) loadCategories(deptId);
+      if (!categories[deptId]) {
+        loadCategories(deptId);
+      }
     }
   }
 
@@ -62,7 +57,9 @@ export default function GestionCatalogo() {
       setExpandedCat(null);
     } else {
       setExpandedCat(catId);
-      if (!services[catId]) loadServices(catId);
+      if (!services[catId]) {
+        loadServices(catId);
+      }
     }
   }
 
@@ -71,7 +68,6 @@ export default function GestionCatalogo() {
     await loadServices(catId);
   }
 
-  // Category modal
   function openCatModal(deptId: number, editing?: ServiceCategory) {
     setCatModal({ open: true, deptId, editing });
     setCatName(editing?.nombre || '');
@@ -79,17 +75,24 @@ export default function GestionCatalogo() {
 
   async function handleSaveCategory() {
     if (!catName.trim()) return;
+
     if (catModal.editing) {
-      await api.updateServiceCategory(catModal.editing.id, { nombre: catName.trim(), department: catModal.deptId });
+      await api.updateServiceCategory(catModal.editing.id, {
+        nombre: catName.trim(),
+        department: catModal.deptId,
+      });
     } else {
-      await api.createServiceCategory({ nombre: catName.trim(), department: catModal.deptId });
+      await api.createServiceCategory({
+        nombre: catName.trim(),
+        department: catModal.deptId,
+      });
     }
+
     setCatModal({ open: false, deptId: 0 });
     setCatName('');
     await loadCategories(catModal.deptId);
   }
 
-  // Service modal
   function openServiceModal(catId: number, editing?: Service) {
     setServiceModal({ open: true, catId, editing });
     setServiceName(editing?.nombre || '');
@@ -99,17 +102,20 @@ export default function GestionCatalogo() {
 
   async function handleSaveService() {
     if (!serviceName.trim()) return;
+
     const data = {
       nombre: serviceName.trim(),
       descripcion: serviceDesc.trim(),
       category: serviceModal.catId,
       tiempo_estimado_default: Number(serviceTiempo),
     };
+
     if (serviceModal.editing) {
       await api.updateService(serviceModal.editing.id, data);
     } else {
       await api.createService(data);
     }
+
     setServiceModal({ open: false, catId: 0 });
     setServiceName('');
     setServiceDesc('');
@@ -117,7 +123,7 @@ export default function GestionCatalogo() {
     await loadServices(serviceModal.catId);
   }
 
-  if (loading) {
+  if (state.loading) {
     return (
       <div className="flex justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
@@ -130,14 +136,14 @@ export default function GestionCatalogo() {
       <h1 className="text-2xl font-bold text-slate-900">Gestion del Catalogo</h1>
 
       <div className="space-y-3">
-        {departments.map((dept) => (
+        {state.items.map((dept) => (
           <div key={dept.id} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <button
               onClick={() => toggleDept(dept.id)}
               className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors"
             >
               <span className="font-medium text-slate-800">{dept.nombre}</span>
-              <span className="text-slate-400 text-lg">{expandedDept === dept.id ? '\u25B2' : '\u25BC'}</span>
+              <span className="text-slate-400 text-lg">{expandedDept === dept.id ? '▲' : '▼'}</span>
             </button>
 
             {expandedDept === dept.id && (
@@ -153,52 +159,49 @@ export default function GestionCatalogo() {
                 </div>
 
                 {(categories[dept.id] || []).length === 0 ? (
-                  <p className="text-sm text-slate-400 py-2">Sin categorias</p>
+                  <p className="text-xs text-slate-400">Sin categorias</p>
                 ) : (
                   <div className="space-y-2">
                     {(categories[dept.id] || []).map((cat) => (
-                      <div key={cat.id} className="border border-slate-200 rounded-lg overflow-hidden">
-                        <div className="flex items-center justify-between px-4 py-2.5 bg-slate-50">
-                          <button
-                            onClick={() => toggleCat(cat.id)}
-                            className="flex-1 text-left text-sm font-medium text-slate-700"
-                          >
-                            {cat.nombre}
-                          </button>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => openCatModal(dept.id, cat)}
-                              className="text-xs text-blue-600 hover:underline"
-                            >
-                              Editar
-                            </button>
-                            <span className="text-xs text-slate-400">{expandedCat === cat.id ? '\u25B2' : '\u25BC'}</span>
-                          </div>
-                        </div>
+                      <div key={cat.id} className="bg-slate-50 rounded-lg border border-slate-100">
+                        <button
+                          onClick={() => toggleCat(cat.id)}
+                          className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-100 transition-colors"
+                        >
+                          <span className="text-sm font-medium text-slate-700">{cat.nombre}</span>
+                          <span className="text-slate-400 text-sm">{expandedCat === cat.id ? '▲' : '▼'}</span>
+                        </button>
 
                         {expandedCat === cat.id && (
-                          <div className="p-3 border-t border-slate-200">
-                            <div className="flex items-center justify-between mb-2">
+                          <div className="px-4 pb-3 border-t border-slate-100">
+                            <div className="flex items-center justify-between py-3">
                               <span className="text-xs font-medium text-slate-500">Servicios</span>
                               <button
                                 onClick={() => openServiceModal(cat.id)}
-                                className="text-xs px-2 py-0.5 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                className="text-xs px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                               >
-                                Nuevo
+                                Nuevo Servicio
                               </button>
                             </div>
+
                             {(services[cat.id] || []).length === 0 ? (
                               <p className="text-xs text-slate-400">Sin servicios</p>
                             ) : (
                               <ul className="space-y-1.5">
                                 {(services[cat.id] || []).map((svc) => (
-                                  <li key={svc.id} className="flex items-center justify-between text-sm p-2 bg-white border border-slate-100 rounded">
+                                  <li
+                                    key={svc.id}
+                                    className="flex items-center justify-between text-sm p-2 bg-white border border-slate-100 rounded"
+                                  >
                                     <div>
                                       <span className={svc.activo ? 'text-slate-800' : 'text-slate-400 line-through'}>
                                         {svc.nombre}
                                       </span>
-                                      <span className="text-xs text-slate-400 ml-2">{svc.tiempo_estimado_default}h</span>
+                                      <span className="text-xs text-slate-400 ml-2">
+                                        {svc.tiempo_estimado_default}h
+                                      </span>
                                     </div>
+
                                     <div className="flex items-center gap-2">
                                       <button
                                         onClick={() => openServiceModal(cat.id, svc)}
@@ -208,7 +211,11 @@ export default function GestionCatalogo() {
                                       </button>
                                       <button
                                         onClick={() => handleToggleService(svc.id, cat.id)}
-                                        className={`text-xs px-2 py-0.5 rounded ${svc.activo ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}
+                                        className={`text-xs px-2 py-0.5 rounded ${
+                                          svc.activo
+                                            ? 'bg-green-100 text-green-700'
+                                            : 'bg-slate-100 text-slate-500'
+                                        }`}
                                       >
                                         {svc.activo ? 'Activo' : 'Inactivo'}
                                       </button>
@@ -229,7 +236,6 @@ export default function GestionCatalogo() {
         ))}
       </div>
 
-      {/* Category Modal */}
       <Modal
         open={catModal.open}
         onClose={() => setCatModal({ open: false, deptId: 0 })}
@@ -246,17 +252,22 @@ export default function GestionCatalogo() {
             />
           </div>
           <div className="flex justify-end gap-2">
-            <button onClick={() => setCatModal({ open: false, deptId: 0 })} className="px-4 py-2 text-sm text-slate-600">
+            <button
+              onClick={() => setCatModal({ open: false, deptId: 0 })}
+              className="px-4 py-2 text-sm text-slate-600"
+            >
               Cancelar
             </button>
-            <button onClick={handleSaveCategory} className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
+            <button
+              onClick={handleSaveCategory}
+              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+            >
               Guardar
             </button>
           </div>
         </div>
       </Modal>
 
-      {/* Service Modal */}
       <Modal
         open={serviceModal.open}
         onClose={() => setServiceModal({ open: false, catId: 0 })}
@@ -292,10 +303,16 @@ export default function GestionCatalogo() {
             />
           </div>
           <div className="flex justify-end gap-2">
-            <button onClick={() => setServiceModal({ open: false, catId: 0 })} className="px-4 py-2 text-sm text-slate-600">
+            <button
+              onClick={() => setServiceModal({ open: false, catId: 0 })}
+              className="px-4 py-2 text-sm text-slate-600"
+            >
               Cancelar
             </button>
-            <button onClick={handleSaveService} className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
+            <button
+              onClick={handleSaveService}
+              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+            >
               Guardar
             </button>
           </div>

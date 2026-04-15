@@ -1,11 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { api } from '@/lib/api';
-import type { Estado } from '@/lib/types';
 import HDTable from '@/components/HDTable';
-import { HelpDesk } from '@/lib/helpdesk/types';
 import { useHelpDeskList } from '@/lib/helpdesk/use-helpdesk-list';
 
 const ESTADO_FILTERS: { value: string; label: string }[] = [
@@ -18,13 +14,7 @@ const ESTADO_FILTERS: { value: string; label: string }[] = [
 ];
 
 export default function MisHelpDesks() {
-  const { state, load } = useHelpDeskList();
-  const [loading, setLoading] = useState(true);
-  const [estadoFilter, setEstadoFilter] = useState('');
-
-  useEffect(() => {
-    load();
-  }, [estadoFilter]);
+  const { state, setFilter } = useHelpDeskList();
 
   return (
     <div className="space-y-6">
@@ -42,9 +32,9 @@ export default function MisHelpDesks() {
         {ESTADO_FILTERS.map((f) => (
           <button
             key={f.value}
-            onClick={() => setEstadoFilter(f.value)}
+            onClick={() => setFilter('estado', f.value)}
             className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-              estadoFilter === f.value
+              state.filters.estado === f.value
                 ? 'bg-blue-600 text-white'
                 : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
             }`}
@@ -54,7 +44,7 @@ export default function MisHelpDesks() {
         ))}
       </div>
 
-      {loading ? (
+      {state.loading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
         </div>

@@ -21,45 +21,53 @@ const ROLE_HOME: Record<Role, string> = {
   super_admin: '/area/helpdesks',
 };
 
-function getStoredAuthUser(): AuthUser | null {
-  if (typeof window === 'undefined') return null;
-
-  const stored = localStorage.getItem('auth_user');
-  if (!stored) return null;
-
-  try {
-    return JSON.parse(stored) as AuthUser;
-  } catch {
-    localStorage.removeItem('auth_user');
-    return null;
-  }
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(() => getStoredAuthUser());
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    api.setToken(user?.token ?? null);
-  }, [user]);
+    const stored = localStorage.getItem('auth_user');
+
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as AuthUser;
+        setUser(parsed);
+        api.setToken(parsed.token ?? null);
+      } catch {
+        localStorage.removeItem('auth_user');
+        api.setToken(null);
+      }
+    } else {
+      api.setToken(null);
+    }
+
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      api.setToken(user?.token ?? null);
+    }
+  }, [user, loading]);
 
   const login = useCallback(async (userId: number, role: Role) => {
     const response = await api.login(userId, role);
     console.log('LOGIN RESPONSE =>', response);
 
-    const token = response.access; // Si llegan a cambiar la respuesta de DJango cambiemos esto
-    const authUser: AuthUser = { user_id: userId, role, token: token };
+    const token = response.access;
+    const authUser: AuthUser = { user_id: userId, role, token };
 
     localStorage.setItem('auth_user', JSON.stringify(authUser));
+    api.setToken(token);
     setUser(authUser);
     router.push(ROLE_HOME[role]);
   }, [router]);
 
   const logout = useCallback(() => {
     localStorage.removeItem('auth_user');
-    setUser(null);
     api.setToken(null);
+    setUser(null);
     router.push('/login');
   }, [router]);
 
