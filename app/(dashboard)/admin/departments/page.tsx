@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Modal from '@/lib/shared/components/Modal';
+import FormField, { TextInput, TextareaInput } from '@/lib/shared/components/FormField';
+import FormActions from '@/lib/shared/components/FormActions';
 import {
   useDepartmentList, createDepartment, updateDepartment,
   type Department,
@@ -156,46 +158,18 @@ export default function GestionDepartamentos() {
         title={editing ? 'Editar Departamento' : 'Nuevo Departamento'}
       >
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Nombre
-            </label>
-            <input
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Descripcion
-            </label>
-            <textarea
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            />
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={closeModal}
-              className="px-4 py-2 text-sm text-slate-600"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving || !nombre.trim()}
-              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              {saving ? 'Guardando...' : 'Guardar'}
-            </button>
-          </div>
+          <FormField label="Nombre">
+            <TextInput value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+          </FormField>
+          <FormField label="Descripcion">
+            <TextareaInput value={descripcion} onChange={(e) => setDescripcion(e.target.value)} rows={3} />
+          </FormField>
+          <FormActions
+            onCancel={closeModal}
+            onSave={handleSave}
+            saveLabel={saving ? 'Guardando...' : 'Guardar'}
+            disabled={saving || !nombre.trim()}
+          />
         </div>
       </Modal>
     </div>
