@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import Modal from '@/lib/shared/components/Modal';
+import FormField, { TextInput, NumberInput, TextareaInput } from '@/lib/shared/components/FormField';
+import CheckboxField from '@/lib/shared/components/CheckboxField';
+import FormActions from '@/lib/shared/components/FormActions';
 import { useDepartmentList } from '@/lib/department';
 import {
   useCategoryCache, useServiceCache,
@@ -253,29 +256,13 @@ export default function GestionCatalogo() {
         title={catModal.editing ? 'Editar Categoria' : 'Nueva Categoria'}
       >
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
-            <input
-              type="text"
-              value={catName}
-              onChange={(e) => setCatName(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => setCatModal({ open: false, deptId: 0 })}
-              className="px-4 py-2 text-sm text-slate-600"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleSaveCategory}
-              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
-            >
-              Guardar
-            </button>
-          </div>
+          <FormField label="Nombre">
+            <TextInput value={catName} onChange={(e) => setCatName(e.target.value)} />
+          </FormField>
+          <FormActions
+            onCancel={() => setCatModal({ open: false, deptId: 0 })}
+            onSave={handleSaveCategory}
+          />
         </div>
       </Modal>
 
@@ -285,60 +272,25 @@ export default function GestionCatalogo() {
         title={serviceModal.editing ? 'Editar Servicio' : 'Nuevo Servicio'}
       >
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
-            <input
-              type="text"
-              value={serviceName}
-              onChange={(e) => setServiceName(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Descripcion</label>
-            <textarea
-              value={serviceDesc}
-              onChange={(e) => setServiceDesc(e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Tiempo estimado (horas)</label>
-            <input
-              type="number"
-              min="1"
-              value={serviceTiempo}
-              onChange={(e) => setServicioTiempo(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="client_close"
-              checked={serviceClientClose}
-              onChange={(e) => setServiceClientClose(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-blue-600"
-            />
-            <label htmlFor="client_close" className="text-sm text-slate-700">
-              Permitir que el solicitante cierre el ticket
-            </label>
-          </div>
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => setServiceModal({ open: false, catId: 0 })}
-              className="px-4 py-2 text-sm text-slate-600"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleSaveService}
-              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
-            >
-              Guardar
-            </button>
-          </div>
+          <FormField label="Nombre">
+            <TextInput value={serviceName} onChange={(e) => setServiceName(e.target.value)} />
+          </FormField>
+          <FormField label="Descripcion">
+            <TextareaInput value={serviceDesc} onChange={(e) => setServiceDesc(e.target.value)} rows={3} />
+          </FormField>
+          <FormField label="Tiempo estimado (horas)">
+            <NumberInput min="1" value={serviceTiempo} onChange={(e) => setServicioTiempo(e.target.value)} />
+          </FormField>
+          <CheckboxField
+            id="client_close"
+            label="Permitir que el solicitante cierre el ticket"
+            checked={serviceClientClose}
+            onChange={setServiceClientClose}
+          />
+          <FormActions
+            onCancel={() => setServiceModal({ open: false, catId: 0 })}
+            onSave={handleSaveService}
+          />
         </div>
       </Modal>
     </div>
