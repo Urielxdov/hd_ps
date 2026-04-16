@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { useDepartmentList } from '@/lib/departaments/use-helpdesk-list';
-import type { Service } from '@/lib/types';
+import { createHelpDesk } from '@/lib/helpdesk';
+import { useDepartmentList } from '@/lib/department';
+import { getDepartmentServices, type Service } from '@/lib/catalog';
 
 export default function NuevoHelpDesk() {
   const router = useRouter();
@@ -28,8 +28,7 @@ export default function NuevoHelpDesk() {
 
     setLoadingServices(true);
     setServiceId('');
-    api
-      .getDepartmentServices(Number(departmentId))
+    getDepartmentServices(Number(departmentId))
       .then((data) => setServices(data))
       .catch(() => setServices([]))
       .finally(() => setLoadingServices(false));
@@ -43,7 +42,7 @@ export default function NuevoHelpDesk() {
     setError('');
 
     try {
-      await api.createHelpDesk({
+      await createHelpDesk({
         service: Number(serviceId),
         origen: 'solicitud',
         prioridad: 'media',

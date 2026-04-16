@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import HDTable from '@/components/HDTable';
-import { useHelpDeskList } from '@/lib/helpdesk/use-helpdesk-list';
+import { HDTable, useHelpDeskList } from '@/lib/helpdesk';
 
 const ESTADO_FILTERS: { value: string; label: string }[] = [
   { value: '', label: 'Todos' },

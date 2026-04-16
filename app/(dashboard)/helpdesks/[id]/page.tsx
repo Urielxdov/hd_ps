@@ -1,14 +1,12 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
-import type { HelpDesk } from '@/lib/types';
-import { ORIGEN_LABELS, PRIORIDAD_LABELS } from '@/lib/types';
-import { EstadoBadge, PrioridadBadge } from '@/components/HDBadge';
-import StatusStepper from '@/components/StatusStepper';
-import CommentThread from '@/components/CommentThread';
-import AttachmentUploader from '@/components/AttachmentUploader';
+import {
+  getHelpDesk, ORIGEN_LABELS, PRIORIDAD_LABELS,
+  EstadoBadge, PrioridadBadge, StatusStepper,
+  CommentThread, AttachmentUploader,
+  type HelpDesk,
+} from '@/lib/helpdesk';
 
 export default function DetalleHelpDesk({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -17,7 +15,7 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
 
   async function load() {
     try {
-      const data = await api.getHelpDesk(Number(id));
+      const data = await getHelpDesk(Number(id));
       setHd(data);
     } finally {
       setLoading(false);

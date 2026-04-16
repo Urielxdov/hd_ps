@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import type { Department } from '@/lib/types';
-import { api } from '@/lib/api';
-import Modal from '@/components/Modal';
-import { useDepartmentList } from '@/lib/departaments/use-helpdesk-list';
+import Modal from '@/lib/shared/components/Modal';
+import {
+  useDepartmentList, createDepartment, updateDepartment,
+  type Department,
+} from '@/lib/department';
 
 export default function GestionDepartamentos() {
   const { state, load } = useDepartmentList();
@@ -35,13 +36,13 @@ export default function GestionDepartamentos() {
     setSaving(true);
     try {
       if (editing) {
-        await api.updateDepartment(editing.id, {
+        await updateDepartment(editing.id, {
           nombre: nombre.trim(),
           descripcion: descripcion.trim(),
           activo: editing.activo,
         });
       } else {
-        await api.createDepartment({
+        await createDepartment({
           nombre: nombre.trim(),
           descripcion: descripcion.trim(),
         });
@@ -58,7 +59,7 @@ export default function GestionDepartamentos() {
 
   async function handleToggle(dept: Department) {
     try {
-      await api.updateDepartment(dept.id, {
+      await updateDepartment(dept.id, {
         ...dept,
         activo: !dept.activo,
       });

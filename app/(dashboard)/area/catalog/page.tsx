@@ -1,13 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { api } from '@/lib/api';
-import type { ServiceCategory, Service } from '@/lib/types';
-import Modal from '@/components/Modal';
-import { useDepartmentList } from '@/lib/departaments/use-helpdesk-list';
+import Modal from '@/lib/shared/components/Modal';
+import { useDepartmentList } from '@/lib/department';
+import {
+  getDepartmentCategories, getCategoryServices,
+  createServiceCategory, updateServiceCategory,
+  createService, updateService, toggleService,
+  type ServiceCategory, type Service,
+} from '@/lib/catalog';
 
 export default function GestionCatalogo() {
-  const { state, load } = useDepartmentList();
+  const { state } = useDepartmentList();
 
   // Expanded state
   const [expandedDept, setExpandedDept] = useState<number | null>(null);
@@ -32,12 +36,12 @@ export default function GestionCatalogo() {
   const [serviceTiempo, setServicioTiempo] = useState('1');
 
   async function loadCategories(deptId: number) {
-    const data = await api.getDepartmentCategories(deptId);
+    const data = await getDepartmentCategories(deptId);
     setCategories((prev) => ({ ...prev, [deptId]: data }));
   }
 
   async function loadServices(catId: number) {
-    const data = await api.getCategoryServices(catId);
+    const data = await getCategoryServices(catId);
     setServices((prev) => ({ ...prev, [catId]: data }));
   }
 
@@ -64,7 +68,7 @@ export default function GestionCatalogo() {
   }
 
   async function handleToggleService(serviceId: number, catId: number) {
-    await api.toggleService(serviceId);
+    await toggleService(serviceId);
     await loadServices(catId);
   }
 
@@ -77,12 +81,12 @@ export default function GestionCatalogo() {
     if (!catName.trim()) return;
 
     if (catModal.editing) {
-      await api.updateServiceCategory(catModal.editing.id, {
+      await updateServiceCategory(catModal.editing.id, {
         nombre: catName.trim(),
         department: catModal.deptId,
       });
     } else {
-      await api.createServiceCategory({
+      await createServiceCategory({
         nombre: catName.trim(),
         department: catModal.deptId,
       });
@@ -111,9 +115,9 @@ export default function GestionCatalogo() {
     };
 
     if (serviceModal.editing) {
-      await api.updateService(serviceModal.editing.id, data);
+      await updateService(serviceModal.editing.id, data);
     } else {
-      await api.createService(data);
+      await createService(data);
     }
 
     setServiceModal({ open: false, catId: 0 });

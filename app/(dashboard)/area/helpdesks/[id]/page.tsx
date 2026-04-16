@@ -1,15 +1,14 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { api } from '@/lib/api';
-import type { HelpDesk, Estado } from '@/lib/types';
-import { ESTADO_LABELS, VALID_TRANSITIONS, ORIGEN_LABELS } from '@/lib/types';
-import { EstadoBadge, PrioridadBadge } from '@/components/HDBadge';
-import StatusStepper from '@/components/StatusStepper';
-import CommentThread from '@/components/CommentThread';
-import AttachmentUploader from '@/components/AttachmentUploader';
-import AssignModal from '@/components/AssignModal';
-import ResolveModal from '@/components/ResolveModal';
+import {
+  getHelpDesk, changeStatus, getValidTransitions,
+  ESTADO_LABELS, ORIGEN_LABELS,
+  EstadoBadge, PrioridadBadge, StatusStepper,
+  CommentThread, AttachmentUploader,
+  AssignModal, ResolveModal,
+  type HelpDesk, type Estado,
+} from '@/lib/helpdesk';
 
 export default function DetalleAdmin({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -20,7 +19,7 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
 
   async function load() {
     try {
-      const data = await api.getHelpDesk(Number(id));
+      const data = await getHelpDesk(Number(id));
       setHd(data);
     } finally {
       setLoading(false);
@@ -33,7 +32,7 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
 
   async function handleStatusChange(newStatus: Estado) {
     try {
-      await api.changeStatus(Number(id), newStatus);
+      await changeStatus(Number(id), newStatus);
       await load();
     } catch {
       alert('Error al cambiar estado');
@@ -52,7 +51,7 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
     return <p className="text-center text-slate-500 py-12">Ticket no encontrado</p>;
   }
 
-  const transitions = VALID_TRANSITIONS[hd.estado].filter((s) => s !== 'resuelto');
+  const transitions = getValidTransitions(hd.estado).filter((s) => s !== 'resuelto');
   const canResolve = hd.estado === 'en_progreso' || hd.estado === 'en_espera';
 
   return (

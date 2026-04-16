@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth';
-import type { Role } from '@/lib/types';
+import type { Role } from '@/lib/auth';
 
 const ROLES: { value: Role; label: string }[] = [
   { value: 'user', label: 'Usuario' },

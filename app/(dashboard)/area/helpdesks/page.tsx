@@ -1,7 +1,6 @@
 'use client';
 
-import HDTable from '@/components/HDTable';
-import { useHelpDeskList } from '@/lib/helpdesk/use-helpdesk-list';
+import { HDTable, useHelpDeskList } from '@/lib/helpdesk';
 
 const ESTADO_FILTERS = [
   { value: '', label: 'Todos' },

@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { api } from '@/lib/api';
-import type { HelpDesk, Estado } from '@/lib/types';
-import HDTable from '@/components/HDTable';
+import {
+  getHelpDesks, changeStatus, HDTable,
+  type HelpDesk, type Estado,
+} from '@/lib/helpdesk';
 
 const ESTADO_FILTERS = [
   { value: '', label: 'Todos' },
@@ -33,8 +34,8 @@ export default function MiCola() {
       const params: Record<string, string> = {};
       if (estadoFilter) params.estado = estadoFilter;
       if (prioridadFilter) params.prioridad = prioridadFilter;
-      const data = await api.getHelpDesks(params);
-      setHelpdesks(data);
+      const data = await getHelpDesks(params);
+      setHelpdesks(data.results);
     } finally {
       setLoading(false);
     }
@@ -46,7 +47,7 @@ export default function MiCola() {
 
   async function handleQuickStatusChange(id: number, newStatus: Estado) {
     try {
-      await api.changeStatus(id, newStatus);
+      await changeStatus(id, newStatus);
       await load();
     } catch {
       alert('Error al cambiar estado. Verifica la transicion.');

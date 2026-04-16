@@ -1,4 +1,48 @@
-import { Estado, HDAttachment, Origen, Prioridad } from "../types";
+export type Estado = 'abierto' | 'en_progreso' | 'en_espera' | 'resuelto' | 'cerrado';
+
+export type Origen = 'error' | 'solicitud' | 'consulta' | 'mantenimiento';
+
+export type Prioridad = 'baja' | 'media' | 'alta' | 'critica';
+
+export type TipoAdjunto = 'archivo' | 'url';
+
+export const ESTADO_LABELS: Record<Estado, string> = {
+  abierto: 'Abierto',
+  en_progreso: 'En progreso',
+  en_espera: 'En espera',
+  resuelto: 'Resuelto',
+  cerrado: 'Cerrado',
+};
+
+export const ORIGEN_LABELS: Record<Origen, string> = {
+  error: 'Error',
+  solicitud: 'Solicitud',
+  consulta: 'Consulta',
+  mantenimiento: 'Mantenimiento',
+};
+
+export const PRIORIDAD_LABELS: Record<Prioridad, string> = {
+  baja: 'Baja',
+  media: 'Media',
+  alta: 'Alta',
+  critica: 'Critica',
+};
+
+export interface HDAttachment {
+  id: number;
+  tipo: TipoAdjunto;
+  nombre: string;
+  valor: string;
+  created_at: string;
+}
+
+export interface HDComment {
+  id: number;
+  autor_id: number | null;
+  contenido: string;
+  es_interno: boolean;
+  created_at: string;
+}
 
 export interface HelpDesk {
   id: number;
@@ -20,57 +64,3 @@ export interface HelpDesk {
   created_at: string;
   updated_at: string;
 }
-
-export type PaginatedResponseHD<T> = {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: T[];
-};
-
-export type HelpDeskFilters = {
-  estado: Estado | string;
-  prioridad: Prioridad | string;
-  responsable_id: string;
-};
-
-export type HelpDeskListState = {
-  items: HelpDesk[];
-  count: number;
-  next: string | null;
-  previous: string | null;
-  loading: boolean;
-  error: string | null;
-  filters: HelpDeskFilters;
-};
-
-export type HelpDeskListAction =
-  | { type: 'LOAD_START' }
-  | {
-      type: 'LOAD_SUCCESS';
-      payload: PaginatedResponseHD<HelpDesk>;
-    }
-  | {
-      type: 'LOAD_ERROR';
-      payload: string;
-    }
-  | {
-      type: 'SET_FILTER';
-      payload: {
-        key: keyof HelpDeskFilters;
-        value: string;
-      };
-    }
-  | {
-      type: 'SET_FILTERS';
-      payload: Partial<HelpDeskFilters>;
-    }
-  | { type: 'RESET_FILTERS' }
-  | {
-      type: 'UPDATE_ITEM';
-      payload: HelpDesk;
-    }
-  | {
-      type: 'REMOVE_ITEM';
-      payload: number;
-    };
