@@ -38,7 +38,7 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
     return <p className="text-center text-slate-500 py-12">Ticket no encontrado</p>;
   }
 
-  const transitions = getValidTransitions(hd.estado).filter((s) => s !== 'resuelto');
+  const transitions = getValidTransitions(hd.estado).filter((s) => s !== 'resuelto' && s !== 'cerrado');
   const canResolve = hd.estado === 'en_progreso' || hd.estado === 'en_espera';
 
   return (

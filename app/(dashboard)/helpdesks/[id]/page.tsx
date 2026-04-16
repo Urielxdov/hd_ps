@@ -3,6 +3,7 @@
 import { use } from 'react';
 import {
   useHelpDesk,
+  changeStatus,
   ORIGEN_LABELS, PRIORIDAD_LABELS,
   EstadoBadge, PrioridadBadge, StatusStepper,
   CommentThread, AttachmentUploader,
@@ -11,6 +12,15 @@ import {
 export default function DetalleHelpDesk({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { hd, loading, reload } = useHelpDesk(Number(id));
+
+  async function handleClose() {
+    try {
+      await changeStatus(Number(id), 'cerrado');
+      await reload();
+    } catch {
+      alert('Error al cerrar el ticket');
+    }
+  }
 
   if (loading) {
     return (
@@ -32,6 +42,17 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
       </div>
 
       <StatusStepper estado={hd.estado} />
+
+      {hd.estado === 'resuelto' && (
+        <div className="flex justify-end">
+          <button
+            onClick={handleClose}
+            className="px-4 py-2 bg-slate-700 text-white text-sm rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            Confirmar cierre
+          </button>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
         <h2 className="text-lg font-semibold text-slate-800">Informacion del Ticket</h2>
