@@ -41,7 +41,7 @@ export async function getCategoryServices(
 }
 
 export async function createService(
-  data: { nombre: string; descripcion: string; category: number; tiempo_estimado_default: number }
+  data: { nombre: string; descripcion: string; category: number; tiempo_estimado_default: number; client_close: boolean }
 ): Promise<Service> {
   return apiClient.request('/services/', {
     method: 'POST',

@@ -33,6 +33,7 @@ export default function GestionCatalogo() {
   const [serviceName, setServiceName] = useState('');
   const [serviceDesc, setServiceDesc] = useState('');
   const [serviceTiempo, setServicioTiempo] = useState('1');
+  const [serviceClientClose, setServiceClientClose] = useState(true);
 
   async function reloadCategories(deptId: number) {
     const items = await getDepartmentCategories(deptId);
@@ -97,6 +98,7 @@ export default function GestionCatalogo() {
     setServiceName(editing?.nombre || '');
     setServiceDesc(editing?.descripcion || '');
     setServicioTiempo(String(editing?.tiempo_estimado_default || 1));
+    setServiceClientClose(editing?.client_close ?? true);
   }
 
   async function handleSaveService() {
@@ -107,6 +109,7 @@ export default function GestionCatalogo() {
       descripcion: serviceDesc.trim(),
       category: serviceModal.catId,
       tiempo_estimado_default: Number(serviceTiempo),
+      client_close: serviceClientClose,
     };
 
     if (serviceModal.editing) {
@@ -119,6 +122,7 @@ export default function GestionCatalogo() {
     setServiceName('');
     setServiceDesc('');
     setServicioTiempo('1');
+    setServiceClientClose(true);
     await reloadServices(serviceModal.catId);
   }
 
@@ -308,6 +312,18 @@ export default function GestionCatalogo() {
               onChange={(e) => setServicioTiempo(e.target.value)}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="client_close"
+              checked={serviceClientClose}
+              onChange={(e) => setServiceClientClose(e.target.checked)}
+              className="h-4 w-4 rounded border-slate-300 text-blue-600"
+            />
+            <label htmlFor="client_close" className="text-sm text-slate-700">
+              Permitir que el solicitante cierre el ticket
+            </label>
           </div>
           <div className="flex justify-end gap-2">
             <button

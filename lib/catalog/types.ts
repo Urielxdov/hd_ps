@@ -13,6 +13,7 @@ export interface Service {
   category: number;
   category_nombre: string;
   tiempo_estimado_default: number;
+  client_close: boolean;
   activo: boolean;
   created_at: string;
 }
