@@ -3,7 +3,7 @@
 import { use } from 'react';
 import {
   useHelpDesk,
-  changeStatus,
+  closeHelpDesk,
   ORIGEN_LABELS, PRIORIDAD_LABELS,
   EstadoBadge, PrioridadBadge, StatusStepper,
   CommentThread, AttachmentUploader,
@@ -15,7 +15,7 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
 
   async function handleClose() {
     try {
-      await changeStatus(Number(id), 'cerrado');
+      await closeHelpDesk(Number(id));
       await reload();
     } catch {
       alert('Error al cerrar el ticket');

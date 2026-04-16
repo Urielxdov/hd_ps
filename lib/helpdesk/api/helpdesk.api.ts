@@ -33,6 +33,12 @@ export async function changeStatus(id: number, estado: string): Promise<HelpDesk
   });
 }
 
+export async function closeHelpDesk(id: number): Promise<HelpDesk> {
+  return apiClient.request(`/helpdesks/${id}/close/`, {
+    method: 'PATCH',
+  });
+}
+
 export async function assignHelpDesk(
   id: number,
   data: { responsable_id: number; fecha_compromiso?: string }

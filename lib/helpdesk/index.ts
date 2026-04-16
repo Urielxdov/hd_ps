@@ -3,7 +3,7 @@ export { canTransition, getValidTransitions } from './domain/transitions';
 
 // API
 export {
-  getHelpDesks, getHelpDesk, createHelpDesk, changeStatus,
+  getHelpDesks, getHelpDesk, createHelpDesk, changeStatus, closeHelpDesk,
   assignHelpDesk, resolveHelpDesk, uploadAttachment, addUrlAttachment,
   deleteAttachment, getComments, addComment,
 } from './api/helpdesk.api';
