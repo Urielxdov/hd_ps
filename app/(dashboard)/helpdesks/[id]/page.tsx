@@ -43,7 +43,7 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
 
       <StatusStepper estado={hd.estado} />
 
-      {hd.estado === 'resuelto' && (
+      {hd.estado === 'resuelto' && hd.service_client_close && (
         <div className="flex justify-end">
           <button
             onClick={handleClose}

@@ -51,6 +51,7 @@ export interface HelpDesk {
   responsable_id: number | null;
   service: number;
   service_nombre: string;
+  service_client_close: boolean;
   origen: Origen;
   prioridad: Prioridad;
   estado: Estado;
