@@ -36,8 +36,9 @@ export default function DetalleTecnico({ params }: { params: Promise<{ id: strin
     return <p className="text-center text-slate-500 py-12">Ticket no encontrado</p>;
   }
 
-  const transitions = getValidTransitions(hd.estado).filter((s) => s !== 'resuelto');
+  const transitions = getValidTransitions(hd.estado).filter((s) => s !== 'resuelto' && s !== 'cerrado');
   const canResolve = hd.estado === 'en_progreso' || hd.estado === 'en_espera';
+  const canEditResolution = hd.estado === 'resuelto';
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -67,6 +68,14 @@ export default function DetalleTecnico({ params }: { params: Promise<{ id: strin
             className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
           >
             Resolver
+          </button>
+        )}
+        {canEditResolution && (
+          <button
+            onClick={() => setResolveOpen(true)}
+            className="px-4 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
+          >
+            Cambiar resolución
           </button>
         )}
       </div>
