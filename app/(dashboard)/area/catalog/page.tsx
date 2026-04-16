@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Modal from '@/lib/shared/components/Modal';
 import { useDepartmentList } from '@/lib/department';
 import {
+  useCategoryCache, useServiceCache,
   getDepartmentCategories, getCategoryServices,
   createServiceCategory, updateServiceCategory,
   createService, updateService, toggleService,
@@ -12,14 +13,12 @@ import {
 
 export default function GestionCatalogo() {
   const { state } = useDepartmentList();
+  const { state: catState, dispatch: catDispatch, loadByDept } = useCategoryCache();
+  const { state: svcState, dispatch: svcDispatch, loadByCat } = useServiceCache();
 
   // Expanded state
   const [expandedDept, setExpandedDept] = useState<number | null>(null);
   const [expandedCat, setExpandedCat] = useState<number | null>(null);
-
-  // Data
-  const [categories, setCategories] = useState<Record<number, ServiceCategory[]>>({});
-  const [services, setServices] = useState<Record<number, Service[]>>({});
 
   // Modals
   const [catModal, setCatModal] = useState<{ open: boolean; deptId: number; editing?: ServiceCategory }>({
@@ -35,14 +34,14 @@ export default function GestionCatalogo() {
   const [serviceDesc, setServiceDesc] = useState('');
   const [serviceTiempo, setServicioTiempo] = useState('1');
 
-  async function loadCategories(deptId: number) {
-    const data = await getDepartmentCategories(deptId);
-    setCategories((prev) => ({ ...prev, [deptId]: data }));
+  async function reloadCategories(deptId: number) {
+    const items = await getDepartmentCategories(deptId);
+    catDispatch({ type: 'LOAD_SUCCESS', payload: { deptId, items } });
   }
 
-  async function loadServices(catId: number) {
-    const data = await getCategoryServices(catId);
-    setServices((prev) => ({ ...prev, [catId]: data }));
+  async function reloadServices(catId: number) {
+    const items = await getCategoryServices(catId);
+    svcDispatch({ type: 'LOAD_SUCCESS', payload: { catId, items } });
   }
 
   function toggleDept(deptId: number) {
@@ -50,9 +49,7 @@ export default function GestionCatalogo() {
       setExpandedDept(null);
     } else {
       setExpandedDept(deptId);
-      if (!categories[deptId]) {
-        loadCategories(deptId);
-      }
+      loadByDept(deptId);
     }
   }
 
@@ -61,15 +58,13 @@ export default function GestionCatalogo() {
       setExpandedCat(null);
     } else {
       setExpandedCat(catId);
-      if (!services[catId]) {
-        loadServices(catId);
-      }
+      loadByCat(catId);
     }
   }
 
   async function handleToggleService(serviceId: number, catId: number) {
     await toggleService(serviceId);
-    await loadServices(catId);
+    await reloadServices(catId);
   }
 
   function openCatModal(deptId: number, editing?: ServiceCategory) {
@@ -94,7 +89,7 @@ export default function GestionCatalogo() {
 
     setCatModal({ open: false, deptId: 0 });
     setCatName('');
-    await loadCategories(catModal.deptId);
+    await reloadCategories(catModal.deptId);
   }
 
   function openServiceModal(catId: number, editing?: Service) {
@@ -124,7 +119,7 @@ export default function GestionCatalogo() {
     setServiceName('');
     setServiceDesc('');
     setServicioTiempo('1');
-    await loadServices(serviceModal.catId);
+    await reloadServices(serviceModal.catId);
   }
 
   if (state.loading) {
@@ -162,11 +157,15 @@ export default function GestionCatalogo() {
                   </button>
                 </div>
 
-                {(categories[dept.id] || []).length === 0 ? (
+                {catState.loading[dept.id] ? (
+                  <div className="flex justify-center py-4">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600" />
+                  </div>
+                ) : (catState.items[dept.id] || []).length === 0 ? (
                   <p className="text-xs text-slate-400">Sin categorias</p>
                 ) : (
                   <div className="space-y-2">
-                    {(categories[dept.id] || []).map((cat) => (
+                    {(catState.items[dept.id] || []).map((cat) => (
                       <div key={cat.id} className="bg-slate-50 rounded-lg border border-slate-100">
                         <button
                           onClick={() => toggleCat(cat.id)}
@@ -188,11 +187,15 @@ export default function GestionCatalogo() {
                               </button>
                             </div>
 
-                            {(services[cat.id] || []).length === 0 ? (
+                            {svcState.loading[cat.id] ? (
+                              <div className="flex justify-center py-4">
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600" />
+                              </div>
+                            ) : (svcState.items[cat.id] || []).length === 0 ? (
                               <p className="text-xs text-slate-400">Sin servicios</p>
                             ) : (
                               <ul className="space-y-1.5">
-                                {(services[cat.id] || []).map((svc) => (
+                                {(svcState.items[cat.id] || []).map((svc) => (
                                   <li
                                     key={svc.id}
                                     className="flex items-center justify-between text-sm p-2 bg-white border border-slate-100 rounded"

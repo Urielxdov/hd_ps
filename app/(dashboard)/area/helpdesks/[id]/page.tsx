@@ -1,39 +1,26 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, use } from 'react';
 import {
-  getHelpDesk, changeStatus, getValidTransitions,
+  useHelpDesk,
+  changeStatus, getValidTransitions,
   ESTADO_LABELS, ORIGEN_LABELS,
   EstadoBadge, PrioridadBadge, StatusStepper,
   CommentThread, AttachmentUploader,
   AssignModal, ResolveModal,
-  type HelpDesk, type Estado,
+  type Estado,
 } from '@/lib/helpdesk';
 
 export default function DetalleAdmin({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const [hd, setHd] = useState<HelpDesk | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { hd, loading, reload } = useHelpDesk(Number(id));
   const [assignOpen, setAssignOpen] = useState(false);
   const [resolveOpen, setResolveOpen] = useState(false);
-
-  async function load() {
-    try {
-      const data = await getHelpDesk(Number(id));
-      setHd(data);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, [id]);
 
   async function handleStatusChange(newStatus: Estado) {
     try {
       await changeStatus(Number(id), newStatus);
-      await load();
+      await reload();
     } catch {
       alert('Error al cambiar estado');
     }
@@ -164,15 +151,15 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <AttachmentUploader helpDeskId={hd.id} attachments={hd.attachments} onUpdate={load} />
+        <AttachmentUploader helpDeskId={hd.id} attachments={hd.attachments} onUpdate={reload} />
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <CommentThread helpDeskId={hd.id} showInternal />
       </div>
 
-      <AssignModal open={assignOpen} onClose={() => setAssignOpen(false)} helpDeskId={hd.id} onAssigned={load} />
-      <ResolveModal open={resolveOpen} onClose={() => setResolveOpen(false)} helpDeskId={hd.id} onResolved={load} />
+      <AssignModal open={assignOpen} onClose={() => setAssignOpen(false)} helpDeskId={hd.id} onAssigned={reload} />
+      <ResolveModal open={resolveOpen} onClose={() => setResolveOpen(false)} helpDeskId={hd.id} onResolved={reload} />
     </div>
   );
 }

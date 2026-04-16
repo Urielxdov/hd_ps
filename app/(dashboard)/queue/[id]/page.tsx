@@ -1,37 +1,24 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, use } from 'react';
 import {
-  getHelpDesk, changeStatus, getValidTransitions,
+  useHelpDesk,
+  changeStatus, getValidTransitions,
   ESTADO_LABELS, ORIGEN_LABELS,
   EstadoBadge, PrioridadBadge, StatusStepper,
   CommentThread, AttachmentUploader, ResolveModal,
-  type HelpDesk, type Estado,
+  type Estado,
 } from '@/lib/helpdesk';
 
 export default function DetalleTecnico({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const [hd, setHd] = useState<HelpDesk | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { hd, loading, reload } = useHelpDesk(Number(id));
   const [resolveOpen, setResolveOpen] = useState(false);
-
-  async function load() {
-    try {
-      const data = await getHelpDesk(Number(id));
-      setHd(data);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, [id]);
 
   async function handleStatusChange(newStatus: Estado) {
     try {
       await changeStatus(Number(id), newStatus);
-      await load();
+      await reload();
     } catch {
       alert('Error al cambiar estado');
     }
@@ -146,7 +133,7 @@ export default function DetalleTecnico({ params }: { params: Promise<{ id: strin
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <AttachmentUploader helpDeskId={hd.id} attachments={hd.attachments} onUpdate={load} />
+        <AttachmentUploader helpDeskId={hd.id} attachments={hd.attachments} onUpdate={reload} />
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
@@ -157,7 +144,7 @@ export default function DetalleTecnico({ params }: { params: Promise<{ id: strin
         open={resolveOpen}
         onClose={() => setResolveOpen(false)}
         helpDeskId={hd.id}
-        onResolved={load}
+        onResolved={reload}
       />
     </div>
   );

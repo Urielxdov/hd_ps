@@ -1,30 +1,16 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { use } from 'react';
 import {
-  getHelpDesk, ORIGEN_LABELS, PRIORIDAD_LABELS,
+  useHelpDesk,
+  ORIGEN_LABELS, PRIORIDAD_LABELS,
   EstadoBadge, PrioridadBadge, StatusStepper,
   CommentThread, AttachmentUploader,
-  type HelpDesk,
 } from '@/lib/helpdesk';
 
 export default function DetalleHelpDesk({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const [hd, setHd] = useState<HelpDesk | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  async function load() {
-    try {
-      const data = await getHelpDesk(Number(id));
-      setHd(data);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, [id]);
+  const { hd, loading, reload } = useHelpDesk(Number(id));
 
   if (loading) {
     return (
@@ -108,7 +94,7 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <AttachmentUploader helpDeskId={hd.id} attachments={hd.attachments} onUpdate={load} />
+        <AttachmentUploader helpDeskId={hd.id} attachments={hd.attachments} onUpdate={reload} />
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">

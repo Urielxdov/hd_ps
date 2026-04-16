@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
-  getHelpDesks, changeStatus, HDTable,
-  type HelpDesk, type Estado,
+  useHelpDeskList, changeStatus,
+  HDTable, type Estado,
 } from '@/lib/helpdesk';
 
 const ESTADO_FILTERS = [
@@ -23,27 +22,7 @@ const PRIORIDAD_FILTERS = [
 ];
 
 export default function MiCola() {
-  const [helpdesks, setHelpdesks] = useState<HelpDesk[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [estadoFilter, setEstadoFilter] = useState('');
-  const [prioridadFilter, setPrioridadFilter] = useState('');
-
-  async function load() {
-    setLoading(true);
-    try {
-      const params: Record<string, string> = {};
-      if (estadoFilter) params.estado = estadoFilter;
-      if (prioridadFilter) params.prioridad = prioridadFilter;
-      const data = await getHelpDesks(params);
-      setHelpdesks(data.results);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, [estadoFilter, prioridadFilter]);
+  const { state, setFilter, load } = useHelpDeskList();
 
   async function handleQuickStatusChange(id: number, newStatus: Estado) {
     try {
@@ -65,9 +44,9 @@ export default function MiCola() {
             {ESTADO_FILTERS.map((f) => (
               <button
                 key={f.value}
-                onClick={() => setEstadoFilter(f.value)}
+                onClick={() => setFilter('estado', f.value)}
                 className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                  estadoFilter === f.value
+                  state.filters.estado === f.value
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
                 }`}
@@ -83,9 +62,9 @@ export default function MiCola() {
             {PRIORIDAD_FILTERS.map((f) => (
               <button
                 key={f.value}
-                onClick={() => setPrioridadFilter(f.value)}
+                onClick={() => setFilter('prioridad', f.value)}
                 className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                  prioridadFilter === f.value
+                  state.filters.prioridad === f.value
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
                 }`}
@@ -97,13 +76,13 @@ export default function MiCola() {
         </div>
       </div>
 
-      {loading ? (
+      {state.loading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
         </div>
       ) : (
         <HDTable
-          helpdesks={helpdesks}
+          helpdesks={state.items}
           basePath="/queue"
           showPriority
           onQuickStatusChange={handleQuickStatusChange}

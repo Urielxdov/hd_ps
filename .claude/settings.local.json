@@ -6,7 +6,10 @@
       "Bash(npx next *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "mcp__ide__getDiagnostics",
+      "Bash(node *)",
+      "Bash(npm run *)"
     ]
   }
 }

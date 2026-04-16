@@ -10,6 +10,7 @@ export {
 
 // Hooks
 export { useHelpDeskList } from './hooks/use-helpdesk-list';
+export { useHelpDesk } from './hooks/use-helpdesk';
 
 // Components
 export { default as HDTable } from './components/HDTable';

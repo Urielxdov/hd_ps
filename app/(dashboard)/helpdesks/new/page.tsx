@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type SubmitEvent as ReactSubmitEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { createHelpDesk } from '@/lib/helpdesk';
 import { useDepartmentList } from '@/lib/department';
-import { getDepartmentServices, type Service } from '@/lib/catalog';
+import { useServicesByDepartment } from '@/lib/catalog';
 
 export default function NuevoHelpDesk() {
   const router = useRouter();
@@ -14,27 +14,18 @@ export default function NuevoHelpDesk() {
 
   const [departmentId, setDepartmentId] = useState('');
   const [serviceId, setServiceId] = useState('');
-  const [services, setServices] = useState<Service[]>([]);
-  const [loadingServices, setLoadingServices] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (!departmentId) {
-      setServices([]);
-      setServiceId('');
-      return;
-    }
+  const { services, loading: loadingServices } = useServicesByDepartment(
+    departmentId ? Number(departmentId) : null
+  );
 
-    setLoadingServices(true);
+  useEffect(() => {
     setServiceId('');
-    getDepartmentServices(Number(departmentId))
-      .then((data) => setServices(data))
-      .catch(() => setServices([]))
-      .finally(() => setLoadingServices(false));
   }, [departmentId]);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: ReactSubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!serviceId) return;
 
