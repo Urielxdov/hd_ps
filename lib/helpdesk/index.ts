@@ -14,6 +14,7 @@ export { useHelpDesk } from './hooks/use-helpdesk';
 
 // Components
 export { default as HDTable } from './components/HDTable';
+export { default as HelpDeskInfo } from './components/HelpDeskInfo';
 export { StatusBadge, PriorityBadge } from './components/HDBadge';
 export { default as StatusStepper } from './components/StatusStepper';
 export { default as CommentThread } from './components/CommentThread';

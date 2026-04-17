@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from '@/lib/shared/components/Modal';
 import { assignHelpDesk } from '../api/helpdesk.api';
 
@@ -9,13 +9,18 @@ interface AssignModalProps {
   onClose: () => void;
   helpDeskId: number;
   onAssigned: () => void;
+  currentAssigneeId?: number | null;
 }
 
-export default function AssignModal({ open, onClose, helpDeskId, onAssigned }: AssignModalProps) {
+export default function AssignModal({ open, onClose, helpDeskId, onAssigned, currentAssigneeId }: AssignModalProps) {
   const [assigneeId, setAssigneeId] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (open) setAssigneeId(currentAssigneeId ? String(currentAssigneeId) : '');
+  }, [open, currentAssigneeId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
