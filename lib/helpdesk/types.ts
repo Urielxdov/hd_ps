@@ -55,6 +55,7 @@ export interface HelpDesk {
   origin: Origin;
   priority: Priority;
   status: Status;
+  impact: 'individual' | 'area' | 'company';
   problem_description: string;
   solution_description: string | null;
   assigned_at: string | null;
