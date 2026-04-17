@@ -36,7 +36,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-slate-800 text-slate-300 flex flex-col min-h-screen">
+    <aside className="w-64 bg-slate-800 text-slate-300 flex flex-col fixed top-0 left-0 h-screen overflow-y-auto">
       <div className="p-5 border-b border-slate-700">
         <h2 className="text-lg font-bold text-white">Help Desk</h2>
         <p className="text-xs text-slate-400 mt-0.5">Pro Servicio</p>
