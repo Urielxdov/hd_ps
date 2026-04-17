@@ -50,7 +50,7 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
           onClick={() => setAssignOpen(true)}
           className="px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
         >
-          Asignar Tecnico
+          {hd.assignee_id ? 'Reasignar Tecnico' : 'Asignar Tecnico'}
         </button>
         {hd.status === 'resolved' && (
           <button
