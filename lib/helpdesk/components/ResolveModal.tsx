@@ -12,20 +12,20 @@ interface ResolveModalProps {
 }
 
 export default function ResolveModal({ open, onClose, helpDeskId, onResolved }: ResolveModalProps) {
-  const [descripcion, setDescripcion] = useState('');
+  const [solutionDescription, setSolutionDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!descripcion.trim()) return;
+    if (!solutionDescription.trim()) return;
     setLoading(true);
     setError('');
     try {
-      await resolveHelpDesk(helpDeskId, descripcion.trim());
+      await resolveHelpDesk(helpDeskId, solutionDescription.trim());
       onResolved();
       onClose();
-      setDescripcion('');
+      setSolutionDescription('');
     } catch {
       setError('Error al resolver. Verifica que el estado actual permita esta accion.');
     } finally {
@@ -41,8 +41,8 @@ export default function ResolveModal({ open, onClose, helpDeskId, onResolved }: 
             Descripcion de la solucion
           </label>
           <textarea
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
+            value={solutionDescription}
+            onChange={(e) => setSolutionDescription(e.target.value)}
             rows={4}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             placeholder="Describe la solucion aplicada..."
@@ -58,7 +58,7 @@ export default function ResolveModal({ open, onClose, helpDeskId, onResolved }: 
           </button>
           <button
             type="submit"
-            disabled={loading || !descripcion.trim()}
+            disabled={loading || !solutionDescription.trim()}
             className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50"
           >
             {loading ? 'Resolviendo...' : 'Resolver'}

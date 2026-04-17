@@ -66,15 +66,15 @@ export default function AttachmentUploader({ helpDeskId, attachments, onUpdate }
           {attachments.map((att) => (
             <li key={att.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-sm">
               <div className="flex items-center gap-2">
-                <span className={`text-xs px-1.5 py-0.5 rounded ${att.tipo === 'archivo' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
-                  {att.tipo === 'archivo' ? 'Archivo' : 'URL'}
+                <span className={`text-xs px-1.5 py-0.5 rounded ${att.type === 'file' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                  {att.type === 'file' ? 'Archivo' : 'URL'}
                 </span>
-                {att.tipo === 'url' ? (
-                  <a href={att.valor} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    {att.nombre}
+                {att.type === 'url' ? (
+                  <a href={att.value} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    {att.name}
                   </a>
                 ) : (
-                  <span className="text-slate-700">{att.nombre}</span>
+                  <span className="text-slate-700">{att.name}</span>
                 )}
               </div>
               <button

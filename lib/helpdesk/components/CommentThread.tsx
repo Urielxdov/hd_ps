@@ -57,17 +57,17 @@ export default function CommentThread({ helpDeskId, showInternal = false }: Comm
             <div
               key={c.id}
               className={`p-3 rounded-lg text-sm ${
-                c.es_interno
+                c.is_internal
                   ? 'bg-amber-50 border border-amber-200'
                   : 'bg-slate-50 border border-slate-200'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-medium text-slate-700">
-                  {c.autor_id ? `Usuario #${c.autor_id}` : 'Sistema'}
+                  {c.author_id ? `Usuario #${c.author_id}` : 'Sistema'}
                 </span>
                 <div className="flex items-center gap-2">
-                  {c.es_interno && (
+                  {c.is_internal && (
                     <span className="text-xs bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded">
                       Interno
                     </span>
@@ -77,7 +77,7 @@ export default function CommentThread({ helpDeskId, showInternal = false }: Comm
                   </span>
                 </div>
               </div>
-              <p className="text-slate-600 whitespace-pre-wrap">{c.contenido}</p>
+              <p className="text-slate-600 whitespace-pre-wrap">{c.content}</p>
             </div>
           ))}
         </div>

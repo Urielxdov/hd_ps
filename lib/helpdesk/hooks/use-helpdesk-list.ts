@@ -18,24 +18,21 @@ export function useHelpDeskList() {
     try {
       const params: Record<string, string> = {};
 
-      if (state.filters.estado) {
-        params.estado = state.filters.estado;
+      if (state.filters.status) {
+        params.status = state.filters.status;
       }
 
-      if (state.filters.prioridad) {
-        params.prioridad = state.filters.prioridad;
+      if (state.filters.priority) {
+        params.priority = state.filters.priority;
       }
 
-      if (state.filters.responsable_id) {
-        params.responsable_id = state.filters.responsable_id;
+      if (state.filters.assignee_id) {
+        params.assignee_id = state.filters.assignee_id;
       }
 
       const data = await getHelpDesks(params);
 
-      dispatch({
-        type: 'LOAD_SUCCESS',
-        payload: data,
-      });
+      dispatch({ type: 'LOAD_SUCCESS', payload: data });
     } catch (error) {
       dispatch({
         type: 'LOAD_ERROR',
@@ -46,9 +43,9 @@ export function useHelpDeskList() {
       });
     }
   }, [
-    state.filters.estado,
-    state.filters.prioridad,
-    state.filters.responsable_id,
+    state.filters.status,
+    state.filters.priority,
+    state.filters.assignee_id,
   ]);
 
   useEffect(() => {
@@ -57,31 +54,18 @@ export function useHelpDeskList() {
 
   const setFilter = useCallback(
     (key: keyof HelpDeskFilters, value: string) => {
-      dispatch({
-        type: 'SET_FILTER',
-        payload: { key, value },
-      });
+      dispatch({ type: 'SET_FILTER', payload: { key, value } });
     },
     []
   );
 
   const setFilters = useCallback((filters: Partial<HelpDeskFilters>) => {
-    dispatch({
-      type: 'SET_FILTERS',
-      payload: filters,
-    });
+    dispatch({ type: 'SET_FILTERS', payload: filters });
   }, []);
 
   const resetFilters = useCallback(() => {
     dispatch({ type: 'RESET_FILTERS' });
   }, []);
 
-  return {
-    state,
-    dispatch,
-    load,
-    setFilter,
-    setFilters,
-    resetFilters,
-  };
+  return { state, dispatch, load, setFilter, setFilters, resetFilters };
 }

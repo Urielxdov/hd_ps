@@ -12,25 +12,25 @@ interface AssignModalProps {
 }
 
 export default function AssignModal({ open, onClose, helpDeskId, onAssigned }: AssignModalProps) {
-  const [responsableId, setResponsableId] = useState('');
-  const [fechaCompromiso, setFechaCompromiso] = useState('');
+  const [assigneeId, setAssigneeId] = useState('');
+  const [dueDate, setDueDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!responsableId) return;
+    if (!assigneeId) return;
     setLoading(true);
     setError('');
     try {
       await assignHelpDesk(helpDeskId, {
-        responsable_id: Number(responsableId),
-        fecha_compromiso: fechaCompromiso || undefined,
+        assignee_id: Number(assigneeId),
+        due_date: dueDate || undefined,
       });
       onAssigned();
       onClose();
-      setResponsableId('');
-      setFechaCompromiso('');
+      setAssigneeId('');
+      setDueDate('');
     } catch {
       setError('Error al asignar el ticket');
     } finally {
@@ -48,8 +48,8 @@ export default function AssignModal({ open, onClose, helpDeskId, onAssigned }: A
           <input
             type="number"
             min="1"
-            value={responsableId}
-            onChange={(e) => setResponsableId(e.target.value)}
+            value={assigneeId}
+            onChange={(e) => setAssigneeId(e.target.value)}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
@@ -60,8 +60,8 @@ export default function AssignModal({ open, onClose, helpDeskId, onAssigned }: A
           </label>
           <input
             type="datetime-local"
-            value={fechaCompromiso}
-            onChange={(e) => setFechaCompromiso(e.target.value)}
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

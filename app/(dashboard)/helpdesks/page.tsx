@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { HDTable, useHelpDeskList } from '@/lib/helpdesk';
 
-const ESTADO_FILTERS: { value: string; label: string }[] = [
+const STATUS_FILTERS: { value: string; label: string }[] = [
   { value: '', label: 'Todos' },
-  { value: 'abierto', label: 'Abierto' },
-  { value: 'en_progreso', label: 'En progreso' },
-  { value: 'en_espera', label: 'En espera' },
-  { value: 'resuelto', label: 'Resuelto' },
-  { value: 'cerrado', label: 'Cerrado' },
+  { value: 'open', label: 'Abierto' },
+  { value: 'in_progress', label: 'En progreso' },
+  { value: 'on_hold', label: 'En espera' },
+  { value: 'resolved', label: 'Resuelto' },
+  { value: 'closed', label: 'Cerrado' },
 ];
 
 export default function MisHelpDesks() {
@@ -28,12 +28,12 @@ export default function MisHelpDesks() {
       </div>
 
       <div className="flex gap-2">
-        {ESTADO_FILTERS.map((f) => (
+        {STATUS_FILTERS.map((f) => (
           <button
             key={f.value}
-            onClick={() => setFilter('estado', f.value)}
+            onClick={() => setFilter('status', f.value)}
             className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-              state.filters.estado === f.value
+              state.filters.status === f.value
                 ? 'bg-blue-600 text-white'
                 : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
             }`}
@@ -48,11 +48,7 @@ export default function MisHelpDesks() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
         </div>
       ) : (
-        <HDTable
-          helpdesks={state.items}
-          basePath="/helpdesks"
-          showTechnician
-        />
+        <HDTable helpdesks={state.items} basePath="/helpdesks" showTechnician />
       )}
     </div>
   );

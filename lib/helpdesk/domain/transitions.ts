@@ -1,17 +1,17 @@
-import type { Estado } from '../types';
+import type { Status } from '../types';
 
-const VALID_TRANSITIONS: Record<Estado, Estado[]> = {
-  abierto: ['en_progreso'],
-  en_progreso: ['en_espera', 'resuelto'],
-  en_espera: ['en_progreso', 'resuelto'],
-  resuelto: ['cerrado'],
-  cerrado: [],
+const VALID_TRANSITIONS: Record<Status, Status[]> = {
+  open: ['in_progress'],
+  in_progress: ['on_hold', 'resolved'],
+  on_hold: ['in_progress', 'resolved'],
+  resolved: ['closed'],
+  closed: [],
 };
 
-export function canTransition(from: Estado, to: Estado): boolean {
+export function canTransition(from: Status, to: Status): boolean {
   return VALID_TRANSITIONS[from]?.includes(to) ?? false;
 }
 
-export function getValidTransitions(from: Estado): Estado[] {
+export function getValidTransitions(from: Status): Status[] {
   return VALID_TRANSITIONS[from] ?? [];
 }

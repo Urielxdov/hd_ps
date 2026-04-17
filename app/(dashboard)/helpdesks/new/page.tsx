@@ -35,9 +35,9 @@ export default function NuevoHelpDesk() {
     try {
       await createHelpDesk({
         service: Number(serviceId),
-        origen: 'solicitud',
-        prioridad: 'media',
-        descripcion_problema: '',
+        origin: 'request',
+        priority: 'medium',
+        problem_description: '',
       });
       router.push('/helpdesks');
     } catch (err) {
@@ -52,11 +52,8 @@ export default function NuevoHelpDesk() {
       <h1 className="text-2xl font-bold text-slate-900">Nuevo Ticket</h1>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
-        {/* Usuario */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Solicitante
-          </label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Solicitante</label>
           <input
             type="text"
             readOnly
@@ -65,33 +62,23 @@ export default function NuevoHelpDesk() {
           />
         </div>
 
-        {/* Departamento */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Departamento
-          </label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Departamento</label>
           <select
             value={departmentId}
             onChange={(e) => setDepartmentId(e.target.value)}
             disabled={deptState.loading}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">
-              {deptState.loading ? 'Cargando...' : 'Selecciona un departamento'}
-            </option>
+            <option value="">{deptState.loading ? 'Cargando...' : 'Selecciona un departamento'}</option>
             {deptState.items.map((dept) => (
-              <option key={dept.id} value={dept.id}>
-                {dept.nombre}
-              </option>
+              <option key={dept.id} value={dept.id}>{dept.name}</option>
             ))}
           </select>
         </div>
 
-        {/* Servicio */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Servicio
-          </label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Servicio</label>
           <select
             value={serviceId}
             onChange={(e) => setServiceId(e.target.value)}
@@ -106,23 +93,15 @@ export default function NuevoHelpDesk() {
                   : 'Selecciona un servicio'}
             </option>
             {services.map((svc) => (
-              <option key={svc.id} value={svc.id}>
-                {svc.nombre}
-              </option>
+              <option key={svc.id} value={svc.id}>{svc.name}</option>
             ))}
           </select>
         </div>
 
-        {error && (
-          <p className="text-sm text-red-600">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-600">{error}</p>}
 
         <div className="flex justify-end gap-3 pt-2">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800"
-          >
+          <button type="button" onClick={() => router.back()} className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800">
             Cancelar
           </button>
           <button

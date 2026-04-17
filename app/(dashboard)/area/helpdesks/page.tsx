@@ -2,35 +2,31 @@
 
 import { HDTable, useHelpDeskList } from '@/lib/helpdesk';
 
-const ESTADO_FILTERS = [
+const STATUS_FILTERS = [
   { value: '', label: 'Todos' },
-  { value: 'abierto', label: 'Abierto' },
-  { value: 'en_progreso', label: 'En progreso' },
-  { value: 'en_espera', label: 'En espera' },
-  { value: 'resuelto', label: 'Resuelto' },
-  { value: 'cerrado', label: 'Cerrado' },
+  { value: 'open', label: 'Abierto' },
+  { value: 'in_progress', label: 'En progreso' },
+  { value: 'on_hold', label: 'En espera' },
+  { value: 'resolved', label: 'Resuelto' },
+  { value: 'closed', label: 'Cerrado' },
 ];
 
-const PRIORIDAD_FILTERS = [
+const PRIORITY_FILTERS = [
   { value: '', label: 'Todas' },
-  { value: 'baja', label: 'Baja' },
-  { value: 'media', label: 'Media' },
-  { value: 'alta', label: 'Alta' },
-  { value: 'critica', label: 'Critica' },
+  { value: 'low', label: 'Baja' },
+  { value: 'medium', label: 'Media' },
+  { value: 'high', label: 'Alta' },
+  { value: 'critical', label: 'Critica' },
 ];
 
 export default function PanelArea() {
   const { state, setFilter } = useHelpDeskList();
 
-  const abiertos = state.items.filter((h) => h.estado === 'abierto').length;
-  const enProgreso = state.items.filter((h) => h.estado === 'en_progreso').length;
   const hoy = new Date().toDateString();
-
+  const abiertos = state.items.filter((h) => h.status === 'open').length;
+  const enProgreso = state.items.filter((h) => h.status === 'in_progress').length;
   const resueltosHoy = state.items.filter(
-    (h) =>
-      h.estado === 'resuelto' &&
-      h.fecha_efectividad &&
-      new Date(h.fecha_efectividad).toDateString() === hoy
+    (h) => h.status === 'resolved' && h.resolved_at && new Date(h.resolved_at).toDateString() === hoy
   ).length;
 
   return (
@@ -56,12 +52,12 @@ export default function PanelArea() {
         <div>
           <label className="block text-xs text-slate-500 mb-1">Estado</label>
           <div className="flex gap-1">
-            {ESTADO_FILTERS.map((f) => (
+            {STATUS_FILTERS.map((f) => (
               <button
                 key={f.value}
-                onClick={() => setFilter('estado', f.value)}
+                onClick={() => setFilter('status', f.value)}
                 className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                  state.filters.estado === f.value
+                  state.filters.status === f.value
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
                 }`}
@@ -75,12 +71,12 @@ export default function PanelArea() {
         <div>
           <label className="block text-xs text-slate-500 mb-1">Prioridad</label>
           <div className="flex gap-1">
-            {PRIORIDAD_FILTERS.map((f) => (
+            {PRIORITY_FILTERS.map((f) => (
               <button
                 key={f.value}
-                onClick={() => setFilter('prioridad', f.value)}
+                onClick={() => setFilter('priority', f.value)}
                 className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                  state.filters.prioridad === f.value
+                  state.filters.priority === f.value
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
                 }`}
@@ -96,8 +92,8 @@ export default function PanelArea() {
           <input
             type="number"
             min="1"
-            value={state.filters.responsable_id}
-            onChange={(e) => setFilter('responsable_id', e.target.value)}
+            value={state.filters.assignee_id}
+            onChange={(e) => setFilter('assignee_id', e.target.value)}
             placeholder="Todos"
             className="w-24 px-2 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
@@ -109,12 +105,7 @@ export default function PanelArea() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
         </div>
       ) : (
-        <HDTable
-          helpdesks={state.items}
-          basePath="/area/helpdesks"
-          showTechnician
-          showPriority
-        />
+        <HDTable helpdesks={state.items} basePath="/area/helpdesks" showTechnician showPriority />
       )}
     </div>
   );

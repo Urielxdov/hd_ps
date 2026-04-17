@@ -1,7 +1,7 @@
 export interface Department {
   id: number;
-  nombre: string;
-  descripcion: string;
-  activo: boolean;
+  name: string;
+  description: string;
+  active: boolean;
   created_at: string;
 }

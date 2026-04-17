@@ -15,10 +15,10 @@ export async function getHelpDesk(id: number): Promise<HelpDesk> {
 
 export async function createHelpDesk(data: {
   service: number;
-  origen: string;
-  prioridad: string;
-  descripcion_problema: string;
-  tiempo_estimado?: number;
+  origin: string;
+  priority: string;
+  problem_description: string;
+  estimated_hours?: number;
 }): Promise<HelpDesk> {
   return apiClient.request('/helpdesks/', {
     method: 'POST',
@@ -26,10 +26,10 @@ export async function createHelpDesk(data: {
   });
 }
 
-export async function changeStatus(id: number, estado: string): Promise<HelpDesk> {
+export async function changeStatus(id: number, status: string): Promise<HelpDesk> {
   return apiClient.request(`/helpdesks/${id}/status/`, {
     method: 'PATCH',
-    body: JSON.stringify({ estado }),
+    body: JSON.stringify({ status }),
   });
 }
 
@@ -41,7 +41,7 @@ export async function closeHelpDesk(id: number): Promise<HelpDesk> {
 
 export async function assignHelpDesk(
   id: number,
-  data: { responsable_id: number; fecha_compromiso?: string }
+  data: { assignee_id: number; due_date?: string }
 ): Promise<HelpDesk> {
   return apiClient.request(`/helpdesks/${id}/assign/`, {
     method: 'PATCH',
@@ -51,23 +51,23 @@ export async function assignHelpDesk(
 
 export async function resolveHelpDesk(
   id: number,
-  descripcion_solucion: string
+  solution_description: string
 ): Promise<HelpDesk> {
   return apiClient.request(`/helpdesks/${id}/resolve/`, {
     method: 'PATCH',
-    body: JSON.stringify({ descripcion_solucion }),
+    body: JSON.stringify({ solution_description }),
   });
 }
 
 export async function uploadAttachment(
   helpDeskId: number,
   file: File,
-  nombre: string
+  name: string
 ): Promise<HDAttachment> {
   const formData = new FormData();
-  formData.append('tipo', 'archivo');
-  formData.append('nombre', nombre);
-  formData.append('archivo', file);
+  formData.append('type', 'file');
+  formData.append('name', name);
+  formData.append('file', file);
   return apiClient.request(`/helpdesks/${helpDeskId}/attachments/`, {
     method: 'POST',
     body: formData,
@@ -76,12 +76,12 @@ export async function uploadAttachment(
 
 export async function addUrlAttachment(
   helpDeskId: number,
-  nombre: string,
+  name: string,
   url: string
 ): Promise<HDAttachment> {
   return apiClient.request(`/helpdesks/${helpDeskId}/attachments/`, {
     method: 'POST',
-    body: JSON.stringify({ tipo: 'url', nombre, valor: url }),
+    body: JSON.stringify({ type: 'url', name, value: url }),
   });
 }
 
@@ -100,11 +100,11 @@ export async function getComments(helpDeskId: number): Promise<HDComment[]> {
 
 export async function addComment(
   helpDeskId: number,
-  contenido: string,
-  es_interno: boolean = false
+  content: string,
+  is_internal: boolean = false
 ): Promise<HDComment> {
   return apiClient.request(`/helpdesks/${helpDeskId}/comments/`, {
     method: 'POST',
-    body: JSON.stringify({ contenido, es_interno }),
+    body: JSON.stringify({ content, is_internal }),
   });
 }

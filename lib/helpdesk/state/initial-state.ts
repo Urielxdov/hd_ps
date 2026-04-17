@@ -8,8 +8,8 @@ export const helpDeskListInitialState: HelpDeskListState = {
   loading: false,
   error: null,
   filters: {
-    estado: '',
-    prioridad: '',
-    responsable_id: '',
+    status: '',
+    priority: '',
+    assignee_id: '',
   },
 };

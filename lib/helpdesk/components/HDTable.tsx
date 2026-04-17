@@ -1,17 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import type { Estado, HelpDesk } from '../types';
-import { ESTADO_LABELS } from '../types';
+import type { Status, HelpDesk } from '../types';
+import { STATUS_LABELS } from '../types';
 import { getValidTransitions } from '../domain/transitions';
-import { EstadoBadge, PrioridadBadge } from './HDBadge';
+import { StatusBadge, PriorityBadge } from './HDBadge';
 
 interface HDTableProps {
   helpdesks: HelpDesk[];
   basePath: string;
   showTechnician?: boolean;
   showPriority?: boolean;
-  onQuickStatusChange?: (id: number, newStatus: Estado) => void;
+  onQuickStatusChange?: (id: number, newStatus: Status) => void;
   technicianSelector?: (hd: HelpDesk) => React.ReactNode;
 }
 
@@ -47,7 +47,7 @@ export default function HDTable({
               </tr>
             ) : (
               helpdesks.map((hd) => {
-                const transitions = getValidTransitions(hd.estado);
+                const transitions = getValidTransitions(hd.status);
                 return (
                   <tr key={hd.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3">
@@ -55,13 +55,13 @@ export default function HDTable({
                         {hd.folio}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-slate-700">{hd.service_nombre}</td>
+                    <td className="px-4 py-3 text-slate-700">{hd.service_name}</td>
                     <td className="px-4 py-3">
-                      <EstadoBadge estado={hd.estado} />
+                      <StatusBadge status={hd.status} />
                     </td>
                     {showPriority && (
                       <td className="px-4 py-3">
-                        <PrioridadBadge prioridad={hd.prioridad} />
+                        <PriorityBadge priority={hd.priority} />
                       </td>
                     )}
                     <td className="px-4 py-3 text-slate-500">
@@ -69,7 +69,7 @@ export default function HDTable({
                     </td>
                     {showTechnician && (
                       <td className="px-4 py-3 text-slate-700">
-                        {technicianSelector ? technicianSelector(hd) : (hd.responsable_id ? `Tecnico #${hd.responsable_id}` : 'Sin asignar')}
+                        {technicianSelector ? technicianSelector(hd) : (hd.assignee_id ? `Tecnico #${hd.assignee_id}` : 'Sin asignar')}
                       </td>
                     )}
                     {onQuickStatusChange && (
@@ -80,14 +80,14 @@ export default function HDTable({
                             defaultValue=""
                             onChange={(e) => {
                               if (e.target.value) {
-                                onQuickStatusChange(hd.id, e.target.value as Estado);
+                                onQuickStatusChange(hd.id, e.target.value as Status);
                                 e.target.value = '';
                               }
                             }}
                           >
                             <option value="" disabled>Cambiar...</option>
                             {transitions.map((s) => (
-                              <option key={s} value={s}>{ESTADO_LABELS[s]}</option>
+                              <option key={s} value={s}>{STATUS_LABELS[s]}</option>
                             ))}
                           </select>
                         )}

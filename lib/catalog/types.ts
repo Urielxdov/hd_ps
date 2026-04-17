@@ -1,19 +1,19 @@
 export interface ServiceCategory {
   id: number;
-  nombre: string;
+  name: string;
   department: number;
-  department_nombre: string;
-  activo: boolean;
+  department_name: string;
+  active: boolean;
 }
 
 export interface Service {
   id: number;
-  nombre: string;
-  descripcion: string;
+  name: string;
+  description: string;
   category: number;
-  category_nombre: string;
-  tiempo_estimado_default: number;
+  category_name: string;
+  estimated_hours: number;
   client_close: boolean;
-  activo: boolean;
+  active: boolean;
   created_at: string;
 }

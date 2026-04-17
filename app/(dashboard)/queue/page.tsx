@@ -2,29 +2,29 @@
 
 import {
   useHelpDeskList, changeStatus,
-  HDTable, type Estado,
+  HDTable, type Status,
 } from '@/lib/helpdesk';
 
-const ESTADO_FILTERS = [
+const STATUS_FILTERS = [
   { value: '', label: 'Todos' },
-  { value: 'abierto', label: 'Abierto' },
-  { value: 'en_progreso', label: 'En progreso' },
-  { value: 'en_espera', label: 'En espera' },
-  { value: 'resuelto', label: 'Resuelto' },
+  { value: 'open', label: 'Abierto' },
+  { value: 'in_progress', label: 'En progreso' },
+  { value: 'on_hold', label: 'En espera' },
+  { value: 'resolved', label: 'Resuelto' },
 ];
 
-const PRIORIDAD_FILTERS = [
+const PRIORITY_FILTERS = [
   { value: '', label: 'Todas' },
-  { value: 'baja', label: 'Baja' },
-  { value: 'media', label: 'Media' },
-  { value: 'alta', label: 'Alta' },
-  { value: 'critica', label: 'Critica' },
+  { value: 'low', label: 'Baja' },
+  { value: 'medium', label: 'Media' },
+  { value: 'high', label: 'Alta' },
+  { value: 'critical', label: 'Critica' },
 ];
 
 export default function MiCola() {
   const { state, setFilter, load } = useHelpDeskList();
 
-  async function handleQuickStatusChange(id: number, newStatus: Estado) {
+  async function handleQuickStatusChange(id: number, newStatus: Status) {
     try {
       await changeStatus(id, newStatus);
       await load();
@@ -41,12 +41,12 @@ export default function MiCola() {
         <div>
           <label className="block text-xs text-slate-500 mb-1">Estado</label>
           <div className="flex gap-1">
-            {ESTADO_FILTERS.map((f) => (
+            {STATUS_FILTERS.map((f) => (
               <button
                 key={f.value}
-                onClick={() => setFilter('estado', f.value)}
+                onClick={() => setFilter('status', f.value)}
                 className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                  state.filters.estado === f.value
+                  state.filters.status === f.value
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
                 }`}
@@ -59,12 +59,12 @@ export default function MiCola() {
         <div>
           <label className="block text-xs text-slate-500 mb-1">Prioridad</label>
           <div className="flex gap-1">
-            {PRIORIDAD_FILTERS.map((f) => (
+            {PRIORITY_FILTERS.map((f) => (
               <button
                 key={f.value}
-                onClick={() => setFilter('prioridad', f.value)}
+                onClick={() => setFilter('priority', f.value)}
                 className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                  state.filters.prioridad === f.value
+                  state.filters.priority === f.value
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
                 }`}

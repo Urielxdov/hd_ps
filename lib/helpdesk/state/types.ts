@@ -1,12 +1,12 @@
-import type { Estado, Prioridad, HelpDesk } from '../types';
+import type { Status, Priority, HelpDesk } from '../types';
 import type { PaginatedResponse } from '@/lib/shared/types';
 
 export type { HelpDesk };
 
 export type HelpDeskFilters = {
-  estado: Estado | string;
-  prioridad: Prioridad | string;
-  responsable_id: string;
+  status: Status | string;
+  priority: Priority | string;
+  assignee_id: string;
 };
 
 export type HelpDeskListState = {

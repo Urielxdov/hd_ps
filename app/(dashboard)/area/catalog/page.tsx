@@ -35,7 +35,7 @@ export default function GestionCatalogo() {
   const [catName, setCatName] = useState('');
   const [serviceName, setServiceName] = useState('');
   const [serviceDesc, setServiceDesc] = useState('');
-  const [serviceTiempo, setServicioTiempo] = useState('1');
+  const [serviceHours, setServiceHours] = useState('1');
   const [serviceClientClose, setServiceClientClose] = useState(true);
 
   async function reloadCategories(deptId: number) {
@@ -73,7 +73,7 @@ export default function GestionCatalogo() {
 
   function openCatModal(deptId: number, editing?: ServiceCategory) {
     setCatModal({ open: true, deptId, editing });
-    setCatName(editing?.nombre || '');
+    setCatName(editing?.name || '');
   }
 
   async function handleSaveCategory() {
@@ -81,12 +81,12 @@ export default function GestionCatalogo() {
 
     if (catModal.editing) {
       await updateServiceCategory(catModal.editing.id, {
-        nombre: catName.trim(),
+        name: catName.trim(),
         department: catModal.deptId,
       });
     } else {
       await createServiceCategory({
-        nombre: catName.trim(),
+        name: catName.trim(),
         department: catModal.deptId,
       });
     }
@@ -98,9 +98,9 @@ export default function GestionCatalogo() {
 
   function openServiceModal(catId: number, editing?: Service) {
     setServiceModal({ open: true, catId, editing });
-    setServiceName(editing?.nombre || '');
-    setServiceDesc(editing?.descripcion || '');
-    setServicioTiempo(String(editing?.tiempo_estimado_default || 1));
+    setServiceName(editing?.name || '');
+    setServiceDesc(editing?.description || '');
+    setServiceHours(String(editing?.estimated_hours || 1));
     setServiceClientClose(editing?.client_close ?? true);
   }
 
@@ -108,10 +108,10 @@ export default function GestionCatalogo() {
     if (!serviceName.trim()) return;
 
     const data = {
-      nombre: serviceName.trim(),
-      descripcion: serviceDesc.trim(),
+      name: serviceName.trim(),
+      description: serviceDesc.trim(),
       category: serviceModal.catId,
-      tiempo_estimado_default: Number(serviceTiempo),
+      estimated_hours: Number(serviceHours),
       client_close: serviceClientClose,
     };
 
@@ -124,7 +124,7 @@ export default function GestionCatalogo() {
     setServiceModal({ open: false, catId: 0 });
     setServiceName('');
     setServiceDesc('');
-    setServicioTiempo('1');
+    setServiceHours('1');
     setServiceClientClose(true);
     await reloadServices(serviceModal.catId);
   }
@@ -148,7 +148,7 @@ export default function GestionCatalogo() {
               onClick={() => toggleDept(dept.id)}
               className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors"
             >
-              <span className="font-medium text-slate-800">{dept.nombre}</span>
+              <span className="font-medium text-slate-800">{dept.name}</span>
               <span className="text-slate-400 text-lg">{expandedDept === dept.id ? '▲' : '▼'}</span>
             </button>
 
@@ -178,7 +178,7 @@ export default function GestionCatalogo() {
                           onClick={() => toggleCat(cat.id)}
                           className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-100 transition-colors"
                         >
-                          <span className="text-sm font-medium text-slate-700">{cat.nombre}</span>
+                          <span className="text-sm font-medium text-slate-700">{cat.name}</span>
                           <span className="text-slate-400 text-sm">{expandedCat === cat.id ? '▲' : '▼'}</span>
                         </button>
 
@@ -208,11 +208,11 @@ export default function GestionCatalogo() {
                                     className="flex items-center justify-between text-sm p-2 bg-white border border-slate-100 rounded"
                                   >
                                     <div>
-                                      <span className={svc.activo ? 'text-slate-800' : 'text-slate-400 line-through'}>
-                                        {svc.nombre}
+                                      <span className={svc.active ? 'text-slate-800' : 'text-slate-400 line-through'}>
+                                        {svc.name}
                                       </span>
                                       <span className="text-xs text-slate-400 ml-2">
-                                        {svc.tiempo_estimado_default}h
+                                        {svc.estimated_hours}h
                                       </span>
                                     </div>
 
@@ -226,12 +226,12 @@ export default function GestionCatalogo() {
                                       <button
                                         onClick={() => handleToggleService(svc.id, cat.id)}
                                         className={`text-xs px-2 py-0.5 rounded ${
-                                          svc.activo
+                                          svc.active
                                             ? 'bg-green-100 text-green-700'
                                             : 'bg-slate-100 text-slate-500'
                                         }`}
                                       >
-                                        {svc.activo ? 'Activo' : 'Inactivo'}
+                                        {svc.active ? 'Activo' : 'Inactivo'}
                                       </button>
                                     </div>
                                   </li>
@@ -279,7 +279,7 @@ export default function GestionCatalogo() {
             <TextareaInput value={serviceDesc} onChange={(e) => setServiceDesc(e.target.value)} rows={3} />
           </FormField>
           <FormField label="Tiempo estimado (horas)">
-            <NumberInput min="1" value={serviceTiempo} onChange={(e) => setServicioTiempo(e.target.value)} />
+            <NumberInput min="1" value={serviceHours} onChange={(e) => setServiceHours(e.target.value)} />
           </FormField>
           <CheckboxField
             id="client_close"

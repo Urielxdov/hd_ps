@@ -1,66 +1,66 @@
-export type Estado = 'abierto' | 'en_progreso' | 'en_espera' | 'resuelto' | 'cerrado';
+export type Status = 'open' | 'in_progress' | 'on_hold' | 'resolved' | 'closed';
 
-export type Origen = 'error' | 'solicitud' | 'consulta' | 'mantenimiento';
+export type Origin = 'error' | 'request' | 'inquiry' | 'maintenance';
 
-export type Prioridad = 'baja' | 'media' | 'alta' | 'critica';
+export type Priority = 'low' | 'medium' | 'high' | 'critical';
 
-export type TipoAdjunto = 'archivo' | 'url';
+export type AttachmentType = 'file' | 'url';
 
-export const ESTADO_LABELS: Record<Estado, string> = {
-  abierto: 'Abierto',
-  en_progreso: 'En progreso',
-  en_espera: 'En espera',
-  resuelto: 'Resuelto',
-  cerrado: 'Cerrado',
+export const STATUS_LABELS: Record<Status, string> = {
+  open: 'Abierto',
+  in_progress: 'En progreso',
+  on_hold: 'En espera',
+  resolved: 'Resuelto',
+  closed: 'Cerrado',
 };
 
-export const ORIGEN_LABELS: Record<Origen, string> = {
+export const ORIGIN_LABELS: Record<Origin, string> = {
   error: 'Error',
-  solicitud: 'Solicitud',
-  consulta: 'Consulta',
-  mantenimiento: 'Mantenimiento',
+  request: 'Solicitud',
+  inquiry: 'Consulta',
+  maintenance: 'Mantenimiento',
 };
 
-export const PRIORIDAD_LABELS: Record<Prioridad, string> = {
-  baja: 'Baja',
-  media: 'Media',
-  alta: 'Alta',
-  critica: 'Critica',
+export const PRIORITY_LABELS: Record<Priority, string> = {
+  low: 'Baja',
+  medium: 'Media',
+  high: 'Alta',
+  critical: 'Critica',
 };
 
 export interface HDAttachment {
   id: number;
-  tipo: TipoAdjunto;
-  nombre: string;
-  valor: string;
+  type: AttachmentType;
+  name: string;
+  value: string;
   created_at: string;
 }
 
 export interface HDComment {
   id: number;
-  autor_id: number | null;
-  contenido: string;
-  es_interno: boolean;
+  author_id: number | null;
+  content: string;
+  is_internal: boolean;
   created_at: string;
 }
 
 export interface HelpDesk {
   id: number;
   folio: string;
-  solicitante_id: number | null;
-  responsable_id: number | null;
+  requester_id: number | null;
+  assignee_id: number | null;
   service: number;
-  service_nombre: string;
+  service_name: string;
   service_client_close: boolean;
-  origen: Origen;
-  prioridad: Prioridad;
-  estado: Estado;
-  descripcion_problema: string;
-  descripcion_solucion: string | null;
-  fecha_asignacion: string | null;
-  fecha_compromiso: string | null;
-  fecha_efectividad: string | null;
-  tiempo_estimado: number;
+  origin: Origin;
+  priority: Priority;
+  status: Status;
+  problem_description: string;
+  solution_description: string | null;
+  assigned_at: string | null;
+  due_date: string | null;
+  resolved_at: string | null;
+  estimated_hours: number;
   attachments: HDAttachment[];
   created_at: string;
   updated_at: string;

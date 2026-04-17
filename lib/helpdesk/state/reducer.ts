@@ -6,11 +6,7 @@ export function helpDeskListReducer(
 ): HelpDeskListState {
   switch (action.type) {
     case 'LOAD_START':
-      return {
-        ...state,
-        loading: true,
-        error: null,
-      };
+      return { ...state, loading: true, error: null };
 
     case 'LOAD_SUCCESS':
       return {
@@ -24,38 +20,21 @@ export function helpDeskListReducer(
       };
 
     case 'LOAD_ERROR':
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-      };
+      return { ...state, loading: false, error: action.payload };
 
     case 'SET_FILTER':
       return {
         ...state,
-        filters: {
-          ...state.filters,
-          [action.payload.key]: action.payload.value,
-        },
+        filters: { ...state.filters, [action.payload.key]: action.payload.value },
       };
 
     case 'SET_FILTERS':
-      return {
-        ...state,
-        filters: {
-          ...state.filters,
-          ...action.payload,
-        },
-      };
+      return { ...state, filters: { ...state.filters, ...action.payload } };
 
     case 'RESET_FILTERS':
       return {
         ...state,
-        filters: {
-          estado: '',
-          prioridad: '',
-          responsable_id: '',
-        },
+        filters: { status: '', priority: '', assignee_id: '' },
       };
 
     case 'UPDATE_ITEM':

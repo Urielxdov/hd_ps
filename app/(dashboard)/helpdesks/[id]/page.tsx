@@ -4,8 +4,8 @@ import { use } from 'react';
 import {
   useHelpDesk,
   closeHelpDesk,
-  ORIGEN_LABELS, PRIORIDAD_LABELS,
-  EstadoBadge, PrioridadBadge, StatusStepper,
+  ORIGIN_LABELS, PRIORITY_LABELS,
+  StatusBadge, PriorityBadge, StatusStepper,
   CommentThread, AttachmentUploader,
 } from '@/lib/helpdesk';
 
@@ -38,12 +38,12 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">{hd.folio}</h1>
-        <EstadoBadge estado={hd.estado} />
+        <StatusBadge status={hd.status} />
       </div>
 
-      <StatusStepper estado={hd.estado} />
+      <StatusStepper status={hd.status} />
 
-      {hd.estado === 'resuelto' && hd.service_client_close && (
+      {hd.status === 'resolved' && hd.service_client_close && (
         <div className="flex justify-end">
           <button
             onClick={handleClose}
@@ -59,20 +59,20 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <span className="text-slate-500">Servicio</span>
-            <p className="font-medium text-slate-800">{hd.service_nombre}</p>
+            <p className="font-medium text-slate-800">{hd.service_name}</p>
           </div>
           <div>
             <span className="text-slate-500">Origen</span>
-            <p className="font-medium text-slate-800">{ORIGEN_LABELS[hd.origen]}</p>
+            <p className="font-medium text-slate-800">{ORIGIN_LABELS[hd.origin]}</p>
           </div>
           <div>
             <span className="text-slate-500">Prioridad</span>
-            <div className="mt-0.5"><PrioridadBadge prioridad={hd.prioridad} /></div>
+            <div className="mt-0.5"><PriorityBadge priority={hd.priority} /></div>
           </div>
           <div>
             <span className="text-slate-500">Tecnico asignado</span>
             <p className="font-medium text-slate-800">
-              {hd.responsable_id ? `Tecnico #${hd.responsable_id}` : 'Sin asignar'}
+              {hd.assignee_id ? `Tecnico #${hd.assignee_id}` : 'Sin asignar'}
             </p>
           </div>
           <div>
@@ -81,18 +81,18 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
           </div>
           <div>
             <span className="text-slate-500">Tiempo estimado</span>
-            <p className="font-medium text-slate-800">{hd.tiempo_estimado}h</p>
+            <p className="font-medium text-slate-800">{hd.estimated_hours}h</p>
           </div>
-          {hd.fecha_compromiso && (
+          {hd.due_date && (
             <div>
               <span className="text-slate-500">Fecha compromiso</span>
-              <p className="font-medium text-slate-800">{new Date(hd.fecha_compromiso).toLocaleString('es-MX')}</p>
+              <p className="font-medium text-slate-800">{new Date(hd.due_date).toLocaleString('es-MX')}</p>
             </div>
           )}
-          {hd.fecha_efectividad && (
+          {hd.resolved_at && (
             <div>
               <span className="text-slate-500">Fecha resolucion</span>
-              <p className="font-medium text-slate-800">{new Date(hd.fecha_efectividad).toLocaleString('es-MX')}</p>
+              <p className="font-medium text-slate-800">{new Date(hd.resolved_at).toLocaleString('es-MX')}</p>
             </div>
           )}
         </div>
@@ -100,15 +100,15 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
         <div>
           <span className="text-sm text-slate-500">Descripcion del problema</span>
           <p className="mt-1 text-sm text-slate-800 whitespace-pre-wrap bg-slate-50 p-3 rounded-lg">
-            {hd.descripcion_problema}
+            {hd.problem_description}
           </p>
         </div>
 
-        {hd.descripcion_solucion && (
+        {hd.solution_description && (
           <div>
             <span className="text-sm text-slate-500">Solucion aplicada</span>
             <p className="mt-1 text-sm text-slate-800 whitespace-pre-wrap bg-green-50 p-3 rounded-lg">
-              {hd.descripcion_solucion}
+              {hd.solution_description}
             </p>
           </div>
         )}

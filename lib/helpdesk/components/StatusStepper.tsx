@@ -1,18 +1,18 @@
-import type { Estado } from '../types';
-import { ESTADO_LABELS } from '../types';
+import type { Status } from '../types';
+import { STATUS_LABELS } from '../types';
 
-const STEPS: Estado[] = ['abierto', 'en_progreso', 'resuelto', 'cerrado'];
+const STEPS: Status[] = ['open', 'in_progress', 'resolved', 'closed'];
 
-const STEP_INDEX: Record<Estado, number> = {
-  abierto: 0,
-  en_progreso: 1,
-  en_espera: 1,
-  resuelto: 2,
-  cerrado: 3,
+const STEP_INDEX: Record<Status, number> = {
+  open: 0,
+  in_progress: 1,
+  on_hold: 1,
+  resolved: 2,
+  closed: 3,
 };
 
-export default function StatusStepper({ estado }: { estado: Estado }) {
-  const currentIdx = STEP_INDEX[estado];
+export default function StatusStepper({ status }: { status: Status }) {
+  const currentIdx = STEP_INDEX[status];
 
   return (
     <div className="flex items-center gap-1">
@@ -35,7 +35,7 @@ export default function StatusStepper({ estado }: { estado: Estado }) {
                 {isPast ? '\u2713' : i + 1}
               </div>
               <span className={`text-xs mt-1 ${isCurrent ? 'font-semibold text-blue-600' : 'text-slate-500'}`}>
-                {ESTADO_LABELS[step]}
+                {STATUS_LABELS[step]}
               </span>
             </div>
             {i < STEPS.length - 1 && (
@@ -44,7 +44,7 @@ export default function StatusStepper({ estado }: { estado: Estado }) {
           </div>
         );
       })}
-      {estado === 'en_espera' && (
+      {status === 'on_hold' && (
         <div className="ml-3">
           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
             En espera

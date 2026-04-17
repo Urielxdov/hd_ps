@@ -4,11 +4,11 @@ import { useState, use } from 'react';
 import {
   useHelpDesk,
   changeStatus, getValidTransitions,
-  ESTADO_LABELS, ORIGEN_LABELS,
-  EstadoBadge, PrioridadBadge, StatusStepper,
+  STATUS_LABELS, ORIGIN_LABELS,
+  StatusBadge, PriorityBadge, StatusStepper,
   CommentThread, AttachmentUploader,
   AssignModal, ResolveModal,
-  type Estado,
+  type Status,
 } from '@/lib/helpdesk';
 
 export default function DetalleAdmin({ params }: { params: Promise<{ id: string }> }) {
@@ -17,7 +17,7 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
   const [assignOpen, setAssignOpen] = useState(false);
   const [resolveOpen, setResolveOpen] = useState(false);
 
-  async function handleStatusChange(newStatus: Estado) {
+  async function handleStatusChange(newStatus: Status) {
     try {
       await changeStatus(Number(id), newStatus);
       await reload();
@@ -38,19 +38,18 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
     return <p className="text-center text-slate-500 py-12">Ticket no encontrado</p>;
   }
 
-  const transitions = getValidTransitions(hd.estado).filter((s) => s !== 'resuelto' && s !== 'cerrado');
-  const canResolve = hd.estado === 'en_progreso' || hd.estado === 'en_espera';
+  const transitions = getValidTransitions(hd.status).filter((s) => s !== 'resolved' && s !== 'closed');
+  const canResolve = hd.status === 'in_progress' || hd.status === 'on_hold';
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">{hd.folio}</h1>
-        <EstadoBadge estado={hd.estado} />
+        <StatusBadge status={hd.status} />
       </div>
 
-      <StatusStepper estado={hd.estado} />
+      <StatusStepper status={hd.status} />
 
-      {/* Actions */}
       <div className="flex flex-wrap gap-2">
         {transitions.map((s) => (
           <button
@@ -58,7 +57,7 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
             onClick={() => handleStatusChange(s)}
             className="px-4 py-2 bg-white border border-slate-300 text-sm rounded-lg hover:bg-slate-50 transition-colors"
           >
-            Cambiar a {ESTADO_LABELS[s]}
+            Cambiar a {STATUS_LABELS[s]}
           </button>
         ))}
         {canResolve && (
@@ -77,32 +76,31 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
         </button>
       </div>
 
-      {/* Info */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
         <h2 className="text-lg font-semibold text-slate-800">Informacion del Ticket</h2>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <span className="text-slate-500">Servicio</span>
-            <p className="font-medium text-slate-800">{hd.service_nombre}</p>
+            <p className="font-medium text-slate-800">{hd.service_name}</p>
           </div>
           <div>
             <span className="text-slate-500">Origen</span>
-            <p className="font-medium text-slate-800">{ORIGEN_LABELS[hd.origen]}</p>
+            <p className="font-medium text-slate-800">{ORIGIN_LABELS[hd.origin]}</p>
           </div>
           <div>
             <span className="text-slate-500">Prioridad</span>
-            <div className="mt-0.5"><PrioridadBadge prioridad={hd.prioridad} /></div>
+            <div className="mt-0.5"><PriorityBadge priority={hd.priority} /></div>
           </div>
           <div>
             <span className="text-slate-500">Solicitante</span>
             <p className="font-medium text-slate-800">
-              {hd.solicitante_id ? `Usuario #${hd.solicitante_id}` : 'Desconocido'}
+              {hd.requester_id ? `Usuario #${hd.requester_id}` : 'Desconocido'}
             </p>
           </div>
           <div>
             <span className="text-slate-500">Tecnico asignado</span>
             <p className="font-medium text-slate-800">
-              {hd.responsable_id ? `Tecnico #${hd.responsable_id}` : 'Sin asignar'}
+              {hd.assignee_id ? `Tecnico #${hd.assignee_id}` : 'Sin asignar'}
             </p>
           </div>
           <div>
@@ -111,24 +109,24 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
           </div>
           <div>
             <span className="text-slate-500">Tiempo estimado</span>
-            <p className="font-medium text-slate-800">{hd.tiempo_estimado}h</p>
+            <p className="font-medium text-slate-800">{hd.estimated_hours}h</p>
           </div>
-          {hd.fecha_asignacion && (
+          {hd.assigned_at && (
             <div>
               <span className="text-slate-500">Fecha asignacion</span>
-              <p className="font-medium text-slate-800">{new Date(hd.fecha_asignacion).toLocaleString('es-MX')}</p>
+              <p className="font-medium text-slate-800">{new Date(hd.assigned_at).toLocaleString('es-MX')}</p>
             </div>
           )}
-          {hd.fecha_compromiso && (
+          {hd.due_date && (
             <div>
               <span className="text-slate-500">Fecha compromiso</span>
-              <p className="font-medium text-slate-800">{new Date(hd.fecha_compromiso).toLocaleString('es-MX')}</p>
+              <p className="font-medium text-slate-800">{new Date(hd.due_date).toLocaleString('es-MX')}</p>
             </div>
           )}
-          {hd.fecha_efectividad && (
+          {hd.resolved_at && (
             <div>
               <span className="text-slate-500">Fecha resolucion</span>
-              <p className="font-medium text-slate-800">{new Date(hd.fecha_efectividad).toLocaleString('es-MX')}</p>
+              <p className="font-medium text-slate-800">{new Date(hd.resolved_at).toLocaleString('es-MX')}</p>
             </div>
           )}
         </div>
@@ -136,15 +134,15 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
         <div>
           <span className="text-sm text-slate-500">Descripcion del problema</span>
           <p className="mt-1 text-sm text-slate-800 whitespace-pre-wrap bg-slate-50 p-3 rounded-lg">
-            {hd.descripcion_problema}
+            {hd.problem_description}
           </p>
         </div>
 
-        {hd.descripcion_solucion && (
+        {hd.solution_description && (
           <div>
             <span className="text-sm text-slate-500">Solucion aplicada</span>
             <p className="mt-1 text-sm text-slate-800 whitespace-pre-wrap bg-green-50 p-3 rounded-lg">
-              {hd.descripcion_solucion}
+              {hd.solution_description}
             </p>
           </div>
         )}
