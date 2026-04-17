@@ -126,7 +126,7 @@ export default function NuevoHelpDesk() {
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               />
             ) : (
-              <p className="text-xs text-slate-400 italic">Sin descripción — haz clic en "Agregar descripción" para incluirla.</p>
+              <p className="text-xs text-slate-400 italic">Sin descripción — haz clic en &quot;Agregar descripción&quot; para incluirla.</p>
             )}
           </div>
         )}
