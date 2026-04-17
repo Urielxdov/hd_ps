@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Modal from '@/lib/shared/components/Modal';
 import FormField, { TextInput, TextareaInput } from '@/lib/shared/components/FormField';
 import FormActions from '@/lib/shared/components/FormActions';
@@ -102,12 +103,13 @@ export default function GestionDepartamentos() {
               <th className="px-4 py-3">Descripcion</th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3">Acciones</th>
+              <th className="px-4 py-3">Técnicos</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {state.items.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-slate-400">No hay departamentos</td>
+                <td colSpan={5} className="px-4 py-8 text-center text-slate-400">No hay departamentos</td>
               </tr>
             ) : (
               state.items.map((dept) => (
@@ -128,6 +130,14 @@ export default function GestionDepartamentos() {
                     <button onClick={() => openModal(dept)} className="text-sm text-blue-600 hover:underline">
                       Editar
                     </button>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/admin/departments/${dept.id}/technicians`}
+                      className="text-sm text-slate-600 hover:underline"
+                    >
+                      Ver técnicos
+                    </Link>
                   </td>
                 </tr>
               ))
