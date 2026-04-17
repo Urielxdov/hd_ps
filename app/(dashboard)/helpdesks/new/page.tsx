@@ -3,7 +3,7 @@
 import { useState, useEffect, type SubmitEvent as ReactSubmitEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
-import { createHelpDesk } from '@/lib/helpdesk';
+import { createHelpDesk, AttachmentUploader } from '@/lib/helpdesk';
 import { useDepartmentList } from '@/lib/department';
 import { useServicesByDepartment } from '@/lib/catalog';
 
@@ -15,7 +15,7 @@ export default function NuevoHelpDesk() {
   const [departmentId, setDepartmentId] = useState('');
   const [serviceId, setServiceId] = useState('');
   const [description, setDescription] = useState('');
-  const [descriptionEnabled, setDescriptionEnabled] = useState(false);
+  const [createdId, setCreatedId] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -26,7 +26,6 @@ export default function NuevoHelpDesk() {
   useEffect(() => {
     setServiceId('');
     setDescription('');
-    setDescriptionEnabled(false);
   }, [departmentId]);
 
   async function handleSubmit(e: ReactSubmitEvent<HTMLFormElement>) {
@@ -37,18 +36,37 @@ export default function NuevoHelpDesk() {
     setError('');
 
     try {
-      await createHelpDesk({
+      const hd = await createHelpDesk({
         service: Number(serviceId),
         origin: 'request',
         priority: 'medium',
         problem_description: description.trim(),
       });
-      router.push('/helpdesks');
+      setCreatedId(hd.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al crear el ticket.');
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (createdId) {
+    return (
+      <div className="max-w-xl mx-auto space-y-6">
+        <h1 className="text-2xl font-bold text-slate-900">Ticket creado</h1>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <AttachmentUploader helpDeskId={createdId} attachments={[]} onUpdate={() => {}} />
+        </div>
+        <div className="flex justify-end">
+          <button
+            onClick={() => router.push(`/helpdesks/${createdId}`)}
+            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+          >
+            Ver ticket
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -102,34 +120,17 @@ export default function NuevoHelpDesk() {
           </select>
         </div>
 
-        {serviceId && (
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-slate-700">Descripción del problema</label>
-              {!descriptionEnabled && (
-                <button
-                  type="button"
-                  onClick={() => setDescriptionEnabled(true)}
-                  className="text-xs text-blue-600 hover:underline"
-                >
-                  Agregar descripción
-                </button>
-              )}
-            </div>
-            {descriptionEnabled ? (
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={4}
-                required
-                placeholder="Describe el problema..."
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              />
-            ) : (
-              <p className="text-xs text-slate-400 italic">Sin descripción — haz clic en &quot;Agregar descripción&quot; para incluirla.</p>
-            )}
-          </div>
-        )}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Descripción del problema</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            required
+            placeholder="Describe el problema..."
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          />
+        </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
@@ -139,7 +140,7 @@ export default function NuevoHelpDesk() {
           </button>
           <button
             type="submit"
-            disabled={!serviceId || !descriptionEnabled || !description.trim() || submitting}
+            disabled={!serviceId || !description.trim() || submitting}
             className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? 'Creando...' : 'Crear Ticket'}
