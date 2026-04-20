@@ -145,7 +145,7 @@ export default function DepartmentPanel({ params }: { params: Promise<{ id: stri
               <span className="text-sm text-slate-600">Estado</span>
               <button
                 onClick={handleToggleStatus}
-                className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                className={`cursor-pointer text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
                   department.active
                     ? 'bg-green-100 text-green-700 hover:bg-green-200'
                     : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
@@ -157,7 +157,7 @@ export default function DepartmentPanel({ params }: { params: Promise<{ id: stri
             <button
               onClick={handleSaveInfo}
               disabled={savingInfo || !name.trim()}
-              className="w-full py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="cursor-pointer w-full py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {savingInfo ? 'Guardando...' : 'Guardar cambios'}
             </button>
@@ -170,7 +170,7 @@ export default function DepartmentPanel({ params }: { params: Promise<{ id: stri
               <h2 className="text-base font-semibold text-slate-800">Técnicos asignados</h2>
               <button
                 onClick={() => setModalOpen(true)}
-                className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                className="cursor-pointer px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Agregar Técnico
               </button>
@@ -206,7 +206,7 @@ export default function DepartmentPanel({ params }: { params: Promise<{ id: stri
                         <td className="px-4 py-3">
                           <button
                             onClick={() => handleToggleTech(tech)}
-                            className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                            className={`cursor-pointer text-xs px-2.5 py-1 rounded-full font-medium ${
                               tech.active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
                             }`}
                           >
@@ -216,7 +216,7 @@ export default function DepartmentPanel({ params }: { params: Promise<{ id: stri
                         <td className="px-4 py-3">
                           <button
                             onClick={() => handleDeleteTech(tech)}
-                            className="text-sm text-red-500 hover:underline"
+                            className="cursor-pointer text-sm text-red-500 hover:underline"
                           >
                             Eliminar
                           </button>

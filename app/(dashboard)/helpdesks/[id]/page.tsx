@@ -47,7 +47,7 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
         <div className="flex justify-end">
           <button
             onClick={handleClose}
-            className="px-4 py-2 bg-slate-700 text-white text-sm rounded-lg hover:bg-slate-800 transition-colors"
+            className="cursor-pointer px-4 py-2 bg-slate-700 text-white text-sm rounded-lg hover:bg-slate-800 transition-colors"
           >
             Confirmar cierre
           </button>

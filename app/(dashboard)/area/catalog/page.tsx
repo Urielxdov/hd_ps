@@ -146,7 +146,7 @@ export default function GestionCatalogo() {
           <div key={dept.id} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <button
               onClick={() => toggleDept(dept.id)}
-              className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors"
+              className="cursor-pointer w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors"
             >
               <span className="font-medium text-slate-800">{dept.name}</span>
               <span className="text-slate-400 text-lg">{expandedDept === dept.id ? '▲' : '▼'}</span>
@@ -158,7 +158,7 @@ export default function GestionCatalogo() {
                   <span className="text-sm font-medium text-slate-600">Categorias</span>
                   <button
                     onClick={() => openCatModal(dept.id)}
-                    className="text-xs px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="cursor-pointer text-xs px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     Nueva Categoria
                   </button>
@@ -176,7 +176,7 @@ export default function GestionCatalogo() {
                       <div key={cat.id} className="bg-slate-50 rounded-lg border border-slate-100">
                         <button
                           onClick={() => toggleCat(cat.id)}
-                          className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-100 transition-colors"
+                          className="cursor-pointer w-full flex items-center justify-between px-4 py-3 hover:bg-slate-100 transition-colors"
                         >
                           <span className="text-sm font-medium text-slate-700">{cat.name}</span>
                           <span className="text-slate-400 text-sm">{expandedCat === cat.id ? '▲' : '▼'}</span>
@@ -188,7 +188,7 @@ export default function GestionCatalogo() {
                               <span className="text-xs font-medium text-slate-500">Servicios</span>
                               <button
                                 onClick={() => openServiceModal(cat.id)}
-                                className="text-xs px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                className="cursor-pointer text-xs px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                               >
                                 Nuevo Servicio
                               </button>
@@ -219,13 +219,13 @@ export default function GestionCatalogo() {
                                     <div className="flex items-center gap-2">
                                       <button
                                         onClick={() => openServiceModal(cat.id, svc)}
-                                        className="text-xs text-blue-600 hover:underline"
+                                        className="cursor-pointer text-xs text-blue-600 hover:underline"
                                       >
                                         Editar
                                       </button>
                                       <button
                                         onClick={() => handleToggleService(svc.id, cat.id)}
-                                        className={`text-xs px-2 py-0.5 rounded ${
+                                        className={`cursor-pointer text-xs px-2 py-0.5 rounded ${
                                           svc.active
                                             ? 'bg-green-100 text-green-700'
                                             : 'bg-slate-100 text-slate-500'

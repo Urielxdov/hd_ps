@@ -60,7 +60,7 @@ export default function NuevoHelpDesk() {
         <div className="flex justify-end">
           <button
             onClick={() => router.push(`/helpdesks/${createdId}`)}
-            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+            className="cursor-pointer px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
           >
             Ver ticket
           </button>
@@ -137,13 +137,13 @@ export default function NuevoHelpDesk() {
         {error && <p className="text-sm text-red-600">{error}</p>}
 
         <div className="flex justify-end gap-3 pt-2">
-          <button type="button" onClick={() => router.back()} className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800">
+          <button type="button" onClick={() => router.back()} className="cursor-pointer px-4 py-2 text-sm text-slate-600 hover:text-slate-800">
             Cancelar
           </button>
           <button
             type="submit"
             disabled={!serviceId || !description.trim() || submitting}
-            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="cursor-pointer px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? 'Creando...' : 'Crear Ticket'}
           </button>

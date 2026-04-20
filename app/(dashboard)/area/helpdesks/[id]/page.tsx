@@ -47,14 +47,14 @@ export default function DetalleAdmin({ params }: { params: Promise<{ id: string 
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => setAssignOpen(true)}
-          className="px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
+          className="cursor-pointer px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
         >
           {hd.assignee_id ? 'Reasignar Tecnico' : 'Asignar Tecnico'}
         </button>
         {hd.status === 'resolved' && (
           <button
             onClick={handleClose}
-            className="px-4 py-2 bg-slate-700 text-white text-sm rounded-lg hover:bg-slate-800 transition-colors"
+            className="cursor-pointer px-4 py-2 bg-slate-700 text-white text-sm rounded-lg hover:bg-slate-800 transition-colors"
           >
             Cerrar ticket
           </button>

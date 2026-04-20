@@ -56,7 +56,7 @@ export default function PanelArea() {
               <button
                 key={f.value}
                 onClick={() => setFilter('status', f.value)}
-                className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                className={`cursor-pointer px-3 py-1.5 text-xs rounded-lg transition-colors ${
                   state.filters.status === f.value
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
@@ -75,7 +75,7 @@ export default function PanelArea() {
               <button
                 key={f.value}
                 onClick={() => setFilter('priority', f.value)}
-                className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                className={`cursor-pointer px-3 py-1.5 text-xs rounded-lg transition-colors ${
                   state.filters.priority === f.value
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'

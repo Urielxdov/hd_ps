@@ -57,7 +57,7 @@ export default function DetalleTecnico({ params }: { params: Promise<{ id: strin
           <button
             key={s}
             onClick={() => handleStatusChange(s)}
-            className="px-4 py-2 bg-white border border-slate-300 text-sm rounded-lg hover:bg-slate-50 transition-colors"
+            className="cursor-pointer px-4 py-2 bg-white border border-slate-300 text-sm rounded-lg hover:bg-slate-50 transition-colors"
           >
             Cambiar a {STATUS_LABELS[s]}
           </button>
@@ -65,7 +65,7 @@ export default function DetalleTecnico({ params }: { params: Promise<{ id: strin
         {canResolve && (
           <button
             onClick={() => setResolveOpen(true)}
-            className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+            className="cursor-pointer px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
           >
             Resolver
           </button>
@@ -73,7 +73,7 @@ export default function DetalleTecnico({ params }: { params: Promise<{ id: strin
         {canEditResolution && (
           <button
             onClick={() => setResolveOpen(true)}
-            className="px-4 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
+            className="cursor-pointer px-4 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
           >
             Cambiar resolución
           </button>
