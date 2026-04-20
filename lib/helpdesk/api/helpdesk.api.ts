@@ -18,6 +18,7 @@ export async function createHelpDesk(data: {
   origin: string;
   priority: string;
   problem_description: string;
+  impact: string;
   estimated_hours?: number;
 }): Promise<HelpDesk> {
   return apiClient.request('/helpdesks/', {

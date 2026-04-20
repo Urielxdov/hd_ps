@@ -14,6 +14,7 @@ export interface Service {
   category_name: string;
   estimated_hours: number;
   client_close: boolean;
+  impact: string;
   active: boolean;
   created_at: string;
 }
