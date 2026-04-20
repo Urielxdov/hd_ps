@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import FormField, { NumberInput } from '@/lib/shared/components/FormField';
 import {
   getSLAConfigs, createSLAConfig, updateSLAConfig,
-  type SLAConfig,
+  type SLAConfig, type ResolutionUnit, RESOLUTION_UNIT_LABELS,
 } from '@/lib/sla';
 
 type SLAForm = {
   max_load: number;
+  resolution_time: number;
+  resolution_unit: ResolutionUnit;
   score_overdue: number;
   score_company: number;
   score_area: number;
@@ -21,6 +23,8 @@ type SLAForm = {
 
 const SLA_DEFAULTS: SLAForm = {
   max_load: 3,
+  resolution_time: 8,
+  resolution_unit: 'business_hours',
   score_overdue: 1000,
   score_company: 100,
   score_area: 50,
@@ -30,6 +34,8 @@ const SLA_DEFAULTS: SLAForm = {
   score_medium: 20,
   score_low: 10,
 };
+
+const inputClass = 'w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
 
 interface Props {
   departmentId: number;
@@ -50,6 +56,8 @@ export default function SLAConfigCard({ departmentId }: Props) {
           setSla(existing);
           setForm({
             max_load: existing.max_load,
+            resolution_time: existing.resolution_time,
+            resolution_unit: existing.resolution_unit,
             score_overdue: existing.score_overdue,
             score_company: existing.score_company,
             score_area: existing.score_area,
@@ -108,6 +116,26 @@ export default function SLAConfigCard({ departmentId }: Props) {
             <div className="max-w-xs">
               <FormField label="Máx. tickets simultáneos por técnico">
                 <NumberInput min="1" value={form.max_load} onChange={(e) => updateField('max_load', e.target.value)} />
+              </FormField>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-slate-600 mb-2">Tiempo de resolución</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-sm">
+              <FormField label="Tiempo">
+                <NumberInput min="1" value={form.resolution_time} onChange={(e) => updateField('resolution_time', e.target.value)} />
+              </FormField>
+              <FormField label="Unidad">
+                <select
+                  value={form.resolution_unit}
+                  onChange={(e) => setForm((prev) => ({ ...prev, resolution_unit: e.target.value as ResolutionUnit }))}
+                  className={inputClass}
+                >
+                  {(Object.keys(RESOLUTION_UNIT_LABELS) as ResolutionUnit[]).map((key) => (
+                    <option key={key} value={key}>{RESOLUTION_UNIT_LABELS[key]}</option>
+                  ))}
+                </select>
               </FormField>
             </div>
           </div>

@@ -15,11 +15,21 @@ export interface TechnicianProfile {
   created_at: string;
 }
 
+export type ResolutionUnit = 'business_hours' | 'calendar_hours' | 'calendar_days';
+
+export const RESOLUTION_UNIT_LABELS: Record<ResolutionUnit, string> = {
+  business_hours: 'Horas hábiles',
+  calendar_hours: 'Horas calendario',
+  calendar_days: 'Días calendario',
+};
+
 export interface SLAConfig {
   id: number;
   department: number | null;
   department_name: string;
   max_load: number;
+  resolution_time: number;
+  resolution_unit: ResolutionUnit;
   score_overdue: number;
   score_company: number;
   score_area: number;
