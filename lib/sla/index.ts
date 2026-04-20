@@ -11,5 +11,5 @@ export { useSLAConfigList } from './hooks/use-sla-config-list';
 export { useServiceQueue } from './hooks/use-service-queue';
 
 // Types
-export type { TechnicianProfile, SLAConfig, ServiceQueueEntry, Impact } from './types';
-export { IMPACT_LABELS } from './types';
+export type { TechnicianProfile, SLAConfig, ServiceQueueEntry, Impact, ResolutionUnit } from './types';
+export { IMPACT_LABELS, RESOLUTION_UNIT_LABELS } from './types';
