@@ -5,67 +5,39 @@ import Link from 'next/link';
 import Modal from '@/lib/shared/components/Modal';
 import FormField, { TextInput, TextareaInput } from '@/lib/shared/components/FormField';
 import FormActions from '@/lib/shared/components/FormActions';
-import {
-  useDepartmentList, createDepartment, updateDepartment,
-  type Department,
-} from '@/lib/department';
+import { useDepartmentList, createDepartment, type Department } from '@/lib/department';
 
 export default function GestionDepartamentos() {
   const { state, load } = useDepartmentList();
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Department | null>(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
 
-  function openModal(dept?: Department) {
-    setEditing(dept || null);
-    setName(dept?.name || '');
-    setDescription(dept?.description || '');
+  function openModal() {
+    setName('');
+    setDescription('');
     setModalOpen(true);
   }
 
   function closeModal() {
     setModalOpen(false);
-    setEditing(null);
     setName('');
     setDescription('');
   }
 
   async function handleSave() {
     if (!name.trim()) return;
-
     setSaving(true);
     try {
-      if (editing) {
-        await updateDepartment(editing.id, {
-          name: name.trim(),
-          description: description.trim(),
-          active: editing.active,
-        });
-      } else {
-        await createDepartment({
-          name: name.trim(),
-          description: description.trim(),
-        });
-      }
-
+      await createDepartment({ name: name.trim(), description: description.trim() });
       closeModal();
       await load();
     } catch {
-      alert('Error al guardar departamento');
+      alert('Error al crear departamento');
     } finally {
       setSaving(false);
-    }
-  }
-
-  async function handleToggle(dept: Department) {
-    try {
-      await updateDepartment(dept.id, { ...dept, active: !dept.active });
-      await load();
-    } catch {
-      alert('Error al cambiar estado');
     }
   }
 
@@ -82,7 +54,7 @@ export default function GestionDepartamentos() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">Gestion de Departamentos</h1>
         <button
-          onClick={() => openModal()}
+          onClick={openModal}
           className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
         >
           Nuevo Departamento
@@ -100,43 +72,34 @@ export default function GestionDepartamentos() {
           <thead>
             <tr className="bg-slate-50 text-left text-slate-600 font-medium">
               <th className="px-4 py-3">Nombre</th>
-              <th className="px-4 py-3">Descripcion</th>
+              <th className="px-4 py-3">Descripción</th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3">Acciones</th>
-              <th className="px-4 py-3">Técnicos</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {state.items.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-400">No hay departamentos</td>
+                <td colSpan={4} className="px-4 py-8 text-center text-slate-400">No hay departamentos</td>
               </tr>
             ) : (
-              state.items.map((dept) => (
+              state.items.map((dept: Department) => (
                 <tr key={dept.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-3 font-medium text-slate-800">{dept.name}</td>
-                  <td className="px-4 py-3 text-slate-600">{dept.description || '-'}</td>
+                  <td className="px-4 py-3 text-slate-500 max-w-xs truncate">{dept.description || '-'}</td>
                   <td className="px-4 py-3">
-                    <button
-                      onClick={() => handleToggle(dept)}
-                      className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                        dept.active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
-                      }`}
-                    >
+                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                      dept.active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
+                    }`}>
                       {dept.active ? 'Activo' : 'Inactivo'}
-                    </button>
-                  </td>
-                  <td className="px-4 py-3">
-                    <button onClick={() => openModal(dept)} className="text-sm text-blue-600 hover:underline">
-                      Editar
-                    </button>
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     <Link
-                      href={`/admin/departments/${dept.id}/technicians`}
-                      className="text-sm text-slate-600 hover:underline"
+                      href={`/admin/departments/${dept.id}`}
+                      className="text-sm text-blue-600 hover:underline font-medium"
                     >
-                      Ver técnicos
+                      Administrar →
                     </Link>
                   </td>
                 </tr>
@@ -146,18 +109,18 @@ export default function GestionDepartamentos() {
         </table>
       </div>
 
-      <Modal open={modalOpen} onClose={closeModal} title={editing ? 'Editar Departamento' : 'Nuevo Departamento'}>
+      <Modal open={modalOpen} onClose={closeModal} title="Nuevo Departamento">
         <div className="space-y-4">
           <FormField label="Nombre">
             <TextInput value={name} onChange={(e) => setName(e.target.value)} required />
           </FormField>
-          <FormField label="Descripcion">
+          <FormField label="Descripción">
             <TextareaInput value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
           </FormField>
           <FormActions
             onCancel={closeModal}
             onSave={handleSave}
-            saveLabel={saving ? 'Guardando...' : 'Guardar'}
+            saveLabel={saving ? 'Guardando...' : 'Crear'}
             disabled={saving || !name.trim()}
           />
         </div>
