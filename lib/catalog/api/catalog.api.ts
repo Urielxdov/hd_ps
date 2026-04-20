@@ -41,7 +41,7 @@ export async function getCategoryServices(
 }
 
 export async function createService(
-  data: { name: string; description: string; category: number; estimated_hours: number; client_close: boolean }
+  data: { name: string; description: string; category: number; estimated_hours: number; client_close: boolean; impact: string }
 ): Promise<Service> {
   return apiClient.request('/services/', {
     method: 'POST',

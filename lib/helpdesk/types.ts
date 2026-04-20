@@ -4,6 +4,14 @@ export type Origin = 'error' | 'request' | 'inquiry' | 'maintenance';
 
 export type Priority = 'low' | 'medium' | 'high' | 'critical';
 
+export type Impact = 'individual' | 'area' | 'company';
+
+export const IMPACT_LABELS: Record<Impact, string> = {
+  individual: 'Individual',
+  area: 'Área',
+  company: 'Empresa',
+};
+
 export type AttachmentType = 'file' | 'url';
 
 export const STATUS_LABELS: Record<Status, string> = {
@@ -55,7 +63,7 @@ export interface HelpDesk {
   origin: Origin;
   priority: Priority;
   status: Status;
-  impact: 'individual' | 'area' | 'company';
+  impact: Impact;
   problem_description: string;
   solution_description: string | null;
   assigned_at: string | null;

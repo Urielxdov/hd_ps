@@ -4,6 +4,7 @@ import { useState, useEffect, type SubmitEvent as ReactSubmitEvent } from 'react
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { createHelpDesk, AttachmentUploader } from '@/lib/helpdesk';
+import { IMPACT_LABELS } from '@/lib/helpdesk/types';
 import { useDepartmentList } from '@/lib/department';
 import { useServicesByDepartment } from '@/lib/catalog';
 
@@ -23,6 +24,8 @@ export default function NuevoHelpDesk() {
     departmentId ? Number(departmentId) : null
   );
 
+  const selectedService = services.find((s) => s.id === Number(serviceId)) ?? null;
+
   useEffect(() => {
     setServiceId('');
     setDescription('');
@@ -41,6 +44,7 @@ export default function NuevoHelpDesk() {
         origin: 'request',
         priority: 'medium',
         problem_description: description.trim(),
+        impact: selectedService?.impact ?? 'individual',
       });
       setCreatedId(hd.id);
     } catch (err) {
@@ -119,6 +123,18 @@ export default function NuevoHelpDesk() {
             ))}
           </select>
         </div>
+
+        {selectedService && (
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Impacto</label>
+            <input
+              type="text"
+              readOnly
+              value={IMPACT_LABELS[selectedService.impact as keyof typeof IMPACT_LABELS] ?? selectedService.impact}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50 text-slate-500"
+            />
+          </div>
+        )}
 
         {serviceId && (
           <div>

@@ -6,6 +6,7 @@ import FormField, { TextInput, NumberInput, TextareaInput } from '@/lib/shared/c
 import CheckboxField from '@/lib/shared/components/CheckboxField';
 import FormActions from '@/lib/shared/components/FormActions';
 import { createService, updateService, type Service } from '@/lib/catalog';
+import { getChoices } from '@/lib/shared/api/choices';
 
 interface Props {
   open: boolean;
@@ -15,12 +16,29 @@ interface Props {
   onSaved: () => void;
 }
 
+const inputClass = 'w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
+
+const impactLabels: Record<string, string> = {
+  individual: 'Individual',
+  area: 'Área',
+  company: 'Empresa',
+};
+
 export default function ServiceModal({ open, onClose, catId, editing, onSaved }: Props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [hours, setHours] = useState('1');
   const [clientClose, setClientClose] = useState(true);
+  const [impact, setImpact] = useState('');
+  const [impactOptions, setImpactOptions] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    getChoices().then((c) => {
+      setImpactOptions(c.impact);
+      if (!editing) setImpact(c.impact[0] ?? '');
+    });
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -28,6 +46,7 @@ export default function ServiceModal({ open, onClose, catId, editing, onSaved }:
       setDescription(editing?.description || '');
       setHours(String(editing?.estimated_hours || 1));
       setClientClose(editing?.client_close ?? true);
+      setImpact(editing?.impact || impactOptions[0] || '');
     }
   }, [open, editing]);
 
@@ -41,6 +60,7 @@ export default function ServiceModal({ open, onClose, catId, editing, onSaved }:
         category: catId,
         estimated_hours: Number(hours),
         client_close: clientClose,
+        impact,
       };
       if (editing) {
         await updateService(editing.id, data);
@@ -67,6 +87,19 @@ export default function ServiceModal({ open, onClose, catId, editing, onSaved }:
         </FormField>
         <FormField label="Tiempo estimado (horas)">
           <NumberInput min="1" value={hours} onChange={(e) => setHours(e.target.value)} />
+        </FormField>
+        <FormField label="Impacto">
+          <select
+            value={impact}
+            onChange={(e) => setImpact(e.target.value)}
+            className={inputClass}
+          >
+            {impactOptions.map((opt) => (
+              <option key={opt} value={opt}>
+                {impactLabels[opt] ?? opt}
+              </option>
+            ))}
+          </select>
         </FormField>
         <CheckboxField
           id="client_close"
