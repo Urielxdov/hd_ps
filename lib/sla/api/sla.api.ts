@@ -11,14 +11,17 @@ export async function getTechnicianProfiles(
   return apiClient.request(`/technician-profiles/${query}`);
 }
 
-export async function createTechnicianProfile(
-  data: Pick<TechnicianProfile, 'user_id' | 'department' | 'active'>
-): Promise<TechnicianProfile> {
-  return apiClient.request('/technician-profiles/', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
-}
+export async function createTechnicianProfile(                                                   
+    data: Pick<TechnicianProfile, 'user_id' | 'department' | 'active'>
+  ): Promise<TechnicianProfile> {                                                    
+    console.log(data)              
+    const res = await apiClient.request('/technician-profiles/', {
+      method: 'POST',                                                                              
+      body: JSON.stringify(data),                           
+    });                                                                                            
+    console.log(res);
+    return res;                                                                                    
+  }     
 
 export async function updateTechnicianProfile(
   id: number,
