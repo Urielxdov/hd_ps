@@ -9,8 +9,33 @@ import { useDepartmentList, updateDepartment } from '@/lib/department';
 import {
   useTechnicianList,
   createTechnicianProfile, updateTechnicianProfile, deleteTechnicianProfile,
-  type TechnicianProfile,
+  getSLAConfigs, createSLAConfig, updateSLAConfig,
+  type TechnicianProfile, type SLAConfig,
 } from '@/lib/sla';
+
+type SLAForm = {
+  max_load: number;
+  score_overdue: number;
+  score_company: number;
+  score_area: number;
+  score_individual: number;
+  score_critical: number;
+  score_high: number;
+  score_medium: number;
+  score_low: number;
+};
+
+const SLA_DEFAULTS: SLAForm = {
+  max_load: 3,
+  score_overdue: 1000,
+  score_company: 100,
+  score_area: 50,
+  score_individual: 10,
+  score_critical: 40,
+  score_high: 30,
+  score_medium: 20,
+  score_low: 10,
+};
 
 export default function DepartmentPanel({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -29,9 +54,40 @@ export default function DepartmentPanel({ params }: { params: Promise<{ id: stri
   const [userId, setUserId] = useState('');
   const [savingTech, setSavingTech] = useState(false);
 
+  const [sla, setSla] = useState<SLAConfig | null>(null);
+  const [slaForm, setSlaForm] = useState<SLAForm>(SLA_DEFAULTS);
+  const [slaLoading, setSlaLoading] = useState(true);
+  const [savingSla, setSavingSla] = useState(false);
+
   useEffect(() => {
     setFilter('department', id);
   }, [id, setFilter]);
+
+  useEffect(() => {
+    setSlaLoading(true);
+    getSLAConfigs({ department: id })
+      .then((res) => {
+        const existing = res.results[0];
+        if (existing) {
+          setSla(existing);
+          setSlaForm({
+            max_load: existing.max_load,
+            score_overdue: existing.score_overdue,
+            score_company: existing.score_company,
+            score_area: existing.score_area,
+            score_individual: existing.score_individual,
+            score_critical: existing.score_critical,
+            score_high: existing.score_high,
+            score_medium: existing.score_medium,
+            score_low: existing.score_low,
+          });
+        } else {
+          setSla(null);
+          setSlaForm(SLA_DEFAULTS);
+        }
+      })
+      .finally(() => setSlaLoading(false));
+  }, [id]);
 
   useEffect(() => {
     if (department) {
@@ -94,6 +150,27 @@ export default function DepartmentPanel({ params }: { params: Promise<{ id: stri
       await reloadTechs();
     } catch {
       alert('Error al eliminar técnico');
+    }
+  }
+
+  function updateSlaField(key: keyof SLAForm, value: string) {
+    setSlaForm((prev) => ({ ...prev, [key]: value === '' ? 0 : Number(value) }));
+  }
+
+  async function handleSaveSla() {
+    setSavingSla(true);
+    try {
+      if (sla) {
+        const updated = await updateSLAConfig(sla.id, slaForm);
+        setSla(updated);
+      } else {
+        const created = await createSLAConfig({ department: deptId, ...slaForm });
+        setSla(created);
+      }
+    } catch {
+      alert('Error al guardar configuración SLA');
+    } finally {
+      setSavingSla(false);
     }
   }
 
@@ -229,6 +306,120 @@ export default function DepartmentPanel({ params }: { params: Promise<{ id: stri
             )}
           </div>
         </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-slate-800">Configuración SLA</h2>
+          {!slaLoading && !sla && (
+            <span className="text-xs text-amber-600 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">
+              Sin configurar — usa valores por defecto
+            </span>
+          )}
+        </div>
+
+        {slaLoading ? (
+          <div className="flex justify-center py-10">
+            <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-blue-600" />
+          </div>
+        ) : (
+          <>
+            <div>
+              <h3 className="text-sm font-medium text-slate-600 mb-2">Límite de carga</h3>
+              <div className="max-w-xs">
+                <FormField label="Máx. tickets simultáneos por técnico">
+                  <NumberInput
+                    min="1"
+                    value={slaForm.max_load}
+                    onChange={(e) => updateSlaField('max_load', e.target.value)}
+                  />
+                </FormField>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-slate-600 mb-2">Puntaje por impacto</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <FormField label="Empresa">
+                  <NumberInput
+                    min="0"
+                    value={slaForm.score_company}
+                    onChange={(e) => updateSlaField('score_company', e.target.value)}
+                  />
+                </FormField>
+                <FormField label="Área">
+                  <NumberInput
+                    min="0"
+                    value={slaForm.score_area}
+                    onChange={(e) => updateSlaField('score_area', e.target.value)}
+                  />
+                </FormField>
+                <FormField label="Individual">
+                  <NumberInput
+                    min="0"
+                    value={slaForm.score_individual}
+                    onChange={(e) => updateSlaField('score_individual', e.target.value)}
+                  />
+                </FormField>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-slate-600 mb-2">Puntaje por prioridad</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <FormField label="Crítica">
+                  <NumberInput
+                    min="0"
+                    value={slaForm.score_critical}
+                    onChange={(e) => updateSlaField('score_critical', e.target.value)}
+                  />
+                </FormField>
+                <FormField label="Alta">
+                  <NumberInput
+                    min="0"
+                    value={slaForm.score_high}
+                    onChange={(e) => updateSlaField('score_high', e.target.value)}
+                  />
+                </FormField>
+                <FormField label="Media">
+                  <NumberInput
+                    min="0"
+                    value={slaForm.score_medium}
+                    onChange={(e) => updateSlaField('score_medium', e.target.value)}
+                  />
+                </FormField>
+                <FormField label="Baja">
+                  <NumberInput
+                    min="0"
+                    value={slaForm.score_low}
+                    onChange={(e) => updateSlaField('score_low', e.target.value)}
+                  />
+                </FormField>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-slate-600 mb-2">Puntaje por vencimiento</h3>
+              <div className="max-w-xs">
+                <FormField label="Ticket vencido">
+                  <NumberInput
+                    min="0"
+                    value={slaForm.score_overdue}
+                    onChange={(e) => updateSlaField('score_overdue', e.target.value)}
+                  />
+                </FormField>
+              </div>
+            </div>
+
+            <button
+              onClick={handleSaveSla}
+              disabled={savingSla}
+              className="cursor-pointer w-full py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {savingSla ? 'Guardando...' : sla ? 'Guardar cambios' : 'Crear configuración SLA'}
+            </button>
+          </>
+        )}
       </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Agregar Técnico">
