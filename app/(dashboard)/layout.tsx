@@ -3,11 +3,13 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
+import { useSidebar } from '@/lib/shared/context/SidebarContext';
 import Sidebar from '@/lib/shared/components/Sidebar';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { collapsed } = useSidebar();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -28,7 +30,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <main className="flex-1 ml-64 p-6 bg-slate-50 overflow-auto min-h-screen">{children}</main>
+      <main
+        className={`flex-1 p-6 bg-slate-50 overflow-auto min-h-screen transition-all duration-300 ${
+          collapsed ? 'ml-20' : 'ml-64'
+        }`}
+      >
+        {children}
+      </main>
     </div>
   );
 }
