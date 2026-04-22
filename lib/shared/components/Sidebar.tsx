@@ -8,9 +8,9 @@ import { useSidebar } from '@/lib/shared/context/SidebarContext';
 import {
   Menu,
   X,
-  TicketOpen,
+  Ticket,
   Plus,
-  Users,
+  ListTodo,
   LayoutGrid,
   Folder,
   Settings,
@@ -25,9 +25,9 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/helpdesks', label: 'Mis HDs', icon: <TicketOpen size={20} />, roles: ['user'] },
+  { href: '/helpdesks', label: 'Mis HDs', icon: <Ticket size={20} />, roles: ['user'] },
   { href: '/helpdesks/new', label: 'Nuevo HD', icon: <Plus size={20} />, roles: ['user'] },
-  { href: '/queue', label: 'Mi Cola', icon: <Users size={20} />, roles: ['technician'] },
+  { href: '/queue', label: 'Mi Cola', icon: <ListTodo size={20} />, roles: ['technician'] },
   { href: '/area/helpdesks', label: 'Panel del Area', icon: <LayoutGrid size={20} />, roles: ['area_admin', 'super_admin'] },
   { href: '/area/catalog', label: 'Catalogo', icon: <Folder size={20} />, roles: ['area_admin', 'super_admin'] },
   { href: '/admin/departments', label: 'Departamentos', icon: <Settings size={20} />, roles: ['super_admin'] },
