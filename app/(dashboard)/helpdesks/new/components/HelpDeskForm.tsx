@@ -3,7 +3,6 @@ import { IMPACT_LABELS } from '@/lib/helpdesk/types';
 import DescriptionField from './DescriptionField';
 import DepartmentField from './DepartmentField';
 import ServiceField from './ServiceField';
-import SelectionSummary from './SelectionSummary';
 import OverrideModal from './OverrideModal';
 
 interface Department {
@@ -116,12 +115,6 @@ export default function HelpDeskForm({
           services={services}
           isLoading={servicesLoading}
           departmentId={departmentId}
-        />
-
-        {/* Resumen de selección */}
-        <SelectionSummary
-          department={departments.find((d) => d.id === Number(departmentId)) || null}
-          service={services.find((s) => s.id === Number(serviceId)) || null}
         />
 
         {/* Impacto heredado del servicio */}
