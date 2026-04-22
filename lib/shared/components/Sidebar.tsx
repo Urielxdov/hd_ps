@@ -56,31 +56,37 @@ export default function Sidebar() {
       }`}
     >
       {/* Header con toggle */}
-      <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+      <div className={`border-b border-slate-700 flex items-center transition-all duration-300 ${
+        collapsed ? 'p-3 justify-center' : 'p-4 justify-between'
+      }`}>
         {!collapsed && (
-          <div>
+          <div className="w-max">
             <h2 className="text-lg font-bold text-white">Help Desk</h2>
             <p className="text-xs text-slate-400 mt-0.5">Pro Servicio</p>
           </div>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1.5 hover:bg-slate-700 rounded-lg transition-colors"
+          className="flex-shrink-0 p-1.5 hover:bg-slate-700 rounded transition-colors"
           title={collapsed ? 'Expandir' : 'Contraer'}
         >
-          {collapsed ? <Menu size={20} /> : <X size={20} />}
+          {collapsed ? <Menu size={18} /> : <X size={18} />}
         </button>
       </div>
 
       {/* Navegación */}
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className={`flex-1 space-y-1 transition-all duration-300 ${
+        collapsed ? 'p-2 flex flex-col items-center' : 'p-3'
+      }`}>
         {visibleItems.map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href + '/');
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 rounded-lg text-sm font-medium transition-colors w-max ${
+                collapsed ? 'p-2' : 'px-3 py-2'
+              } ${
                 active
                   ? 'bg-blue-600 text-white'
                   : 'hover:bg-slate-700 hover:text-white'
@@ -95,9 +101,11 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer con info de usuario */}
-      <div className="p-3 border-t border-slate-700">
+      <div className={`border-t border-slate-700 transition-all duration-300 ${
+        collapsed ? 'p-2 flex flex-col items-center gap-2' : 'p-3'
+      }`}>
         {!collapsed && (
-          <div className="mb-3">
+          <div className="mb-2">
             <div className="text-sm">
               <span className="text-slate-400">ID:</span>{' '}
               <span className="text-white font-medium">{user.user_id}</span>
@@ -107,8 +115,8 @@ export default function Sidebar() {
         )}
         <button
           onClick={logout}
-          className={`w-full flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors ${
-            collapsed ? 'justify-center' : ''
+          className={`flex items-center gap-2 text-sm rounded-lg border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors w-max ${
+            collapsed ? 'p-2' : 'w-full px-3 py-2'
           }`}
           title={collapsed ? 'Cerrar sesión' : ''}
         >
