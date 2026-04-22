@@ -48,9 +48,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`bg-white border-r border-slate-200 flex flex-col fixed top-0 left-0 h-screen overflow-y-auto transition-all duration-300 z-50 ${
-        collapsed ? 'w-20' : 'w-64'
-      }`}
+      className={`bg-white border-r border-slate-200 flex flex-col fixed top-0 left-0 h-screen overflow-y-auto transition-all duration-300 z-50 w-max`}
     >
       {/* Header */}
       <div className={`border-b border-slate-200 transition-all duration-300 ${
@@ -114,8 +112,8 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-lg text-sm font-medium transition-colors w-max ${
-                collapsed ? 'p-2.5 justify-center' : 'px-3 py-2 w-full'
+              className={`flex items-center gap-3 rounded-lg text-sm font-medium transition-colors w-full ${
+                collapsed ? 'p-2.5 justify-center' : 'px-3 py-2'
               } ${
                 active
                   ? 'bg-slate-100 text-slate-900'
@@ -138,8 +136,8 @@ export default function Sidebar() {
       }`}>
         <button
           onClick={logout}
-          className={`flex items-center gap-3 text-sm font-medium rounded-lg text-slate-700 hover:bg-slate-50 transition-colors w-max ${
-            collapsed ? 'p-2.5' : 'px-3 py-2 w-full'
+          className={`flex items-center gap-3 text-sm font-medium rounded-lg text-slate-700 hover:bg-slate-50 transition-colors w-full ${
+            collapsed ? 'p-2.5 justify-center' : 'px-3 py-2'
           }`}
           title={collapsed ? 'Cerrar sesión' : ''}
         >
