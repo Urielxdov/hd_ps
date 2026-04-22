@@ -9,6 +9,7 @@ import { useServicesByDepartment } from '@/lib/catalog';
 import { classifyText, sendClassifyFeedback, type ClassifySuggestion } from '@/lib/classify';
 import SuccessView from './components/SuccessView';
 import HelpDeskForm from './components/HelpDeskForm';
+import SelectionSummary from './components/SelectionSummary';
 
 export default function NuevoHelpDesk() {
   const router = useRouter();
@@ -109,36 +110,49 @@ export default function NuevoHelpDesk() {
   }
 
   return (
-    <div className="max-w-xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">Nuevo Ticket</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-slate-900 max-w-6xl mx-auto">Nuevo Ticket</h1>
 
-      <HelpDeskForm
-        user={user}
-        description={description}
-        onDescriptionChange={handleDescriptionChange}
-        onClassifyNow={performClassify}
-        isClassifying={classifying}
-        hasClassified={hasClassified}
-        suggestion={suggestion}
-        isLocked={locked}
-        departmentId={departmentId}
-        onDepartmentChange={(id) => {
-          setDepartmentId(id);
-          setServiceId('');
-        }}
-        serviceId={serviceId}
-        onServiceChange={setServiceId}
-        departments={deptState.items}
-        deptLoading={deptState.loading}
-        services={services}
-        servicesLoading={loadingServices}
-        error={error}
-        isSubmitting={submitting}
-        onSubmit={handleSubmit}
-        showOverrideModal={showOverrideModal}
-        onShowOverrideModal={setShowOverrideModal}
-        onOverrideConfirm={handleOverrideConfirm}
-      />
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Formulario */}
+        <div>
+          <HelpDeskForm
+            user={user}
+            description={description}
+            onDescriptionChange={handleDescriptionChange}
+            onClassifyNow={performClassify}
+            isClassifying={classifying}
+            hasClassified={hasClassified}
+            suggestion={suggestion}
+            isLocked={locked}
+            departmentId={departmentId}
+            onDepartmentChange={(id) => {
+              setDepartmentId(id);
+              setServiceId('');
+            }}
+            serviceId={serviceId}
+            onServiceChange={setServiceId}
+            departments={deptState.items}
+            deptLoading={deptState.loading}
+            services={services}
+            servicesLoading={loadingServices}
+            error={error}
+            isSubmitting={submitting}
+            onSubmit={handleSubmit}
+            showOverrideModal={showOverrideModal}
+            onShowOverrideModal={setShowOverrideModal}
+            onOverrideConfirm={handleOverrideConfirm}
+          />
+        </div>
+
+        {/* Resumen al lado */}
+        <div className="sticky top-6 h-fit">
+          <SelectionSummary
+            department={deptState.items.find((d) => d.id === Number(departmentId)) || null}
+            service={services.find((s) => s.id === Number(serviceId)) || null}
+          />
+        </div>
+      </div>
     </div>
   );
 }
