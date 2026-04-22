@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
@@ -8,6 +9,7 @@ import { useSidebar } from '@/lib/shared/context/SidebarContext';
 import {
   ChevronLeft,
   ChevronRight,
+  Search,
   Ticket,
   Plus,
   ListTodo,
@@ -37,40 +39,74 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const { collapsed, setCollapsed } = useSidebar();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   if (!user) return null;
 
   const visibleItems = NAV_ITEMS.filter((item) => item.roles.includes(user.role));
 
-  const roleLabels: Record<Role, string> = {
-    user: 'Usuario',
-    technician: 'Tecnico',
-    area_admin: 'Admin de area',
-    super_admin: 'Super Admin',
-  };
-
   return (
-    <>
-      <aside
-        className={`bg-slate-800 text-slate-300 flex flex-col fixed top-0 left-0 h-screen overflow-y-auto transition-all duration-300 z-50 ${
-          collapsed ? 'w-20' : 'w-64'
-        }`}
-      >
+    <aside
+      className={`bg-white border-r border-slate-200 flex flex-col fixed top-0 left-0 h-screen overflow-y-auto transition-all duration-300 z-50 ${
+        collapsed ? 'w-20' : 'w-64'
+      }`}
+    >
       {/* Header */}
-      <div className={`border-b border-slate-700 transition-all duration-300 ${
-        collapsed ? 'p-3 flex justify-center' : 'p-4'
+      <div className={`border-b border-slate-200 transition-all duration-300 ${
+        collapsed ? 'p-3 flex justify-center' : 'p-4 flex items-center justify-between'
       }`}>
         {!collapsed && (
-          <div className="w-max">
-            <h2 className="text-lg font-bold text-white">Help Desk</h2>
-            <p className="text-xs text-slate-400 mt-0.5">Pro Servicio</p>
+          <div className="flex items-center gap-2 w-max">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-900 text-white font-bold text-sm">
+              HD
+            </div>
+            <span className="font-semibold text-slate-900">Help Desk</span>
+          </div>
+        )}
+        {collapsed && (
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-900 text-white font-bold text-sm">
+            HD
+          </div>
+        )}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex-shrink-0 p-1 hover:bg-slate-100 rounded-lg transition-colors text-slate-600"
+          title={collapsed ? 'Expandir' : 'Contraer'}
+        >
+          {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+        </button>
+      </div>
+
+      {/* Search bar */}
+      <div className={`border-b border-slate-200 transition-all duration-300 ${
+        collapsed ? 'p-3 flex justify-center' : 'p-3'
+      }`}>
+        {collapsed ? (
+          <button
+            onClick={() => setSearchOpen(!searchOpen)}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600"
+            title="Buscar"
+          >
+            <Search size={18} />
+          </button>
+        ) : (
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-3 py-2 pl-9 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <Search size={16} className="absolute left-3 top-2.5 text-slate-400" />
           </div>
         )}
       </div>
 
       {/* Navegación */}
-      <nav className={`flex-1 space-y-1 transition-all duration-300 ${
-        collapsed ? 'p-2 flex flex-col items-center' : 'p-3'
+      <nav className={`flex-1 transition-all duration-300 ${
+        collapsed ? 'p-2 flex flex-col items-center gap-1' : 'p-3 space-y-1'
       }`}>
         {visibleItems.map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href + '/');
@@ -79,57 +115,38 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 rounded-lg text-sm font-medium transition-colors w-max ${
-                collapsed ? 'p-2' : 'px-3 py-2'
+                collapsed ? 'p-2.5 justify-center' : 'px-3 py-2 w-full'
               } ${
                 active
-                  ? 'bg-blue-600 text-white'
-                  : 'hover:bg-slate-700 hover:text-white'
+                  ? 'bg-slate-100 text-slate-900'
+                  : 'text-slate-700 hover:bg-slate-50'
               }`}
               title={collapsed ? item.label : ''}
             >
-              <span className="flex-shrink-0">{item.icon}</span>
+              <span className={`flex-shrink-0 ${active ? 'text-slate-900' : 'text-slate-600'}`}>
+                {item.icon}
+              </span>
               {!collapsed && <span>{item.label}</span>}
             </Link>
           );
         })}
       </nav>
 
-      {/* Footer con info de usuario */}
-      <div className={`border-t border-slate-700 transition-all duration-300 ${
-        collapsed ? 'p-2 flex flex-col items-center gap-2' : 'p-3'
+      {/* Footer */}
+      <div className={`border-t border-slate-200 transition-all duration-300 ${
+        collapsed ? 'p-2 flex justify-center' : 'p-3'
       }`}>
-        {!collapsed && (
-          <div className="mb-2">
-            <div className="text-sm">
-              <span className="text-slate-400">ID:</span>{' '}
-              <span className="text-white font-medium">{user.user_id}</span>
-            </div>
-            <div className="text-xs text-slate-400 mt-0.5">{roleLabels[user.role]}</div>
-          </div>
-        )}
         <button
           onClick={logout}
-          className={`flex items-center gap-2 text-sm rounded-lg border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors w-max ${
-            collapsed ? 'p-2' : 'w-full px-3 py-2'
+          className={`flex items-center gap-3 text-sm font-medium rounded-lg text-slate-700 hover:bg-slate-50 transition-colors w-max ${
+            collapsed ? 'p-2.5' : 'px-3 py-2 w-full'
           }`}
           title={collapsed ? 'Cerrar sesión' : ''}
         >
-          <LogOut size={18} />
-          {!collapsed && <span>Cerrar sesion</span>}
+          <LogOut size={18} className="text-slate-600" />
+          {!collapsed && <span>Cerrar sesión</span>}
         </button>
       </div>
-      </aside>
-
-      {/* Botón flotante toggle */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className={`fixed top-5 flex items-center justify-center w-10 h-10 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-300 z-40 shadow-lg ${
-          collapsed ? 'left-24' : 'left-80'
-        }`}
-        title={collapsed ? 'Expandir' : 'Contraer'}
-      >
-        {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-      </button>
-    </>
+    </aside>
   );
 }
