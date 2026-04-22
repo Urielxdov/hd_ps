@@ -6,8 +6,8 @@ import { useAuth } from '@/lib/auth';
 import type { Role } from '@/lib/auth';
 import { useSidebar } from '@/lib/shared/context/SidebarContext';
 import {
-  Menu,
-  X,
+  ChevronLeft,
+  ChevronRight,
   Ticket,
   Plus,
   ListTodo,
@@ -50,14 +50,15 @@ export default function Sidebar() {
   };
 
   return (
-    <aside
-      className={`bg-slate-800 text-slate-300 flex flex-col fixed top-0 left-0 h-screen overflow-y-auto transition-all duration-300 z-50 ${
-        collapsed ? 'w-20' : 'w-64'
-      }`}
-    >
-      {/* Header con toggle */}
-      <div className={`border-b border-slate-700 flex items-center transition-all duration-300 ${
-        collapsed ? 'p-3 justify-center' : 'p-4 justify-between'
+    <>
+      <aside
+        className={`bg-slate-800 text-slate-300 flex flex-col fixed top-0 left-0 h-screen overflow-y-auto transition-all duration-300 z-50 ${
+          collapsed ? 'w-20' : 'w-64'
+        }`}
+      >
+      {/* Header */}
+      <div className={`border-b border-slate-700 transition-all duration-300 ${
+        collapsed ? 'p-3 flex justify-center' : 'p-4'
       }`}>
         {!collapsed && (
           <div className="w-max">
@@ -65,13 +66,6 @@ export default function Sidebar() {
             <p className="text-xs text-slate-400 mt-0.5">Pro Servicio</p>
           </div>
         )}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="flex-shrink-0 p-1.5 hover:bg-slate-700 rounded transition-colors"
-          title={collapsed ? 'Expandir' : 'Contraer'}
-        >
-          {collapsed ? <Menu size={18} /> : <X size={18} />}
-        </button>
       </div>
 
       {/* Navegación */}
@@ -124,6 +118,18 @@ export default function Sidebar() {
           {!collapsed && <span>Cerrar sesion</span>}
         </button>
       </div>
-    </aside>
+      </aside>
+
+      {/* Botón flotante toggle */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className={`fixed top-5 flex items-center justify-center w-10 h-10 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-300 z-40 shadow-lg ${
+          collapsed ? 'left-24' : 'left-80'
+        }`}
+        title={collapsed ? 'Expandir' : 'Contraer'}
+      >
+        {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+      </button>
+    </>
   );
 }
