@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
+import { ROLE_HIERARCHY, ROLE_LABELS } from '@/lib/auth';
 import type { Role } from '@/lib/auth';
 import { useSidebar } from '@/lib/shared/context/SidebarContext';
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Search,
   Ticket,
   Plus,
@@ -18,6 +20,8 @@ import {
   Settings,
   LogOut,
   Zap,
+  Users,
+  Check,
 } from 'lucide-react';
 
 interface NavItem {
@@ -38,15 +42,35 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export default function Sidebar() {
-  const { user, logout } = useAuth();
+  const { user, activeRole, setActiveRole, logout } = useAuth();
   const pathname = usePathname();
   const { collapsed, setCollapsed } = useSidebar();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [switcherOpen, setSwitcherOpen] = useState(false);
+  const switcherRef = useRef<HTMLDivElement>(null);
 
-  if (!user) return null;
+  useEffect(() => {
+    if (!switcherOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (switcherRef.current && !switcherRef.current.contains(e.target as Node)) {
+        setSwitcherOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [switcherOpen]);
 
-  const visibleItems = NAV_ITEMS.filter((item) => item.roles.includes(user.role));
+  if (!user || !activeRole) return null;
+
+  const switchableRoles: Role[] = [user.role, ...ROLE_HIERARCHY[user.role]];
+  const canSwitch = ROLE_HIERARCHY[user.role].length > 0;
+  const visibleItems = NAV_ITEMS.filter((item) => item.roles.includes(activeRole));
+
+  function handleRoleSelect(role: Role) {
+    setActiveRole(role);
+    setSwitcherOpen(false);
+  }
 
   return (
     <aside
@@ -134,8 +158,67 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className={`border-t border-slate-200 transition-all duration-300 ${
-        collapsed ? 'p-2 flex justify-center' : 'p-3'
+        collapsed ? 'p-2 flex flex-col items-center gap-1' : 'p-3 space-y-1'
       }`}>
+        {/* Role switcher */}
+        {canSwitch && (
+          <div ref={switcherRef} className="relative w-full">
+            {collapsed ? (
+              <button
+                onClick={() => setSwitcherOpen(!switcherOpen)}
+                className={`p-2.5 rounded-lg transition-colors w-full flex justify-center ${
+                  activeRole !== user.role
+                    ? 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+                title="Cambiar vista"
+              >
+                <Users size={18} />
+              </button>
+            ) : (
+              <>
+                <p className="text-xs text-slate-400 px-1 mb-1">Vista como:</p>
+                <button
+                  onClick={() => setSwitcherOpen(!switcherOpen)}
+                  className={`flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    activeRole !== user.role
+                      ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                      : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>{ROLE_LABELS[activeRole]}</span>
+                  <ChevronDown size={14} className="text-slate-400 flex-shrink-0" />
+                </button>
+              </>
+            )}
+
+            {switcherOpen && (
+              <div className={`absolute z-50 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 ${
+                collapsed ? 'bottom-0 left-full ml-2' : 'bottom-full left-0 mb-1'
+              }`}>
+                {switchableRoles.map((role) => (
+                  <button
+                    key={role}
+                    onClick={() => handleRoleSelect(role)}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-slate-50 transition-colors"
+                  >
+                    <span className="w-4 flex-shrink-0">
+                      {activeRole === role && <Check size={14} className="text-blue-600" />}
+                    </span>
+                    <span className={activeRole === role ? 'font-medium text-slate-900' : 'text-slate-600'}>
+                      {ROLE_LABELS[role]}
+                      {role === user.role && (
+                        <span className="ml-1 text-xs text-slate-400">(mi rol)</span>
+                      )}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Logout */}
         <button
           onClick={logout}
           className={`flex items-center gap-3 text-sm font-medium rounded-lg text-slate-700 hover:bg-slate-50 transition-colors w-full ${

@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/shared/api/client';
 import { login as apiLogin } from './api/auth.api';
 import type { AuthUser, Role } from './types';
-import { ROLE_HOME } from './types';
+import { ROLE_HOME, ROLE_HIERARCHY } from './types';
 
 interface AuthContextType {
   user: AuthUser | null;
+  activeRole: Role | null;
+  setActiveRole: (role: Role) => void;
   login: (userId: number, role: Role) => Promise<void>;
   logout: () => void;
   loading: boolean;
@@ -18,6 +20,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [activeRole, setActiveRoleState] = useState<Role | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -43,8 +46,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loading) {
       apiClient.setToken(user?.token ?? null);
+      setActiveRoleState(user?.role ?? null);
     }
   }, [user, loading]);
+
+  const setActiveRole = useCallback((role: Role) => {
+    if (!user) return;
+    if (role === user.role || ROLE_HIERARCHY[user.role].includes(role)) {
+      setActiveRoleState(role);
+    }
+  }, [user]);
 
   const login = useCallback(async (userId: number, role: Role) => {
     const response = await apiLogin(userId, role);
@@ -67,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, activeRole, setActiveRole, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
