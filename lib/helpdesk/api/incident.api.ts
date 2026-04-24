@@ -6,11 +6,11 @@ export async function getIncidents(
   params?: Record<string, string>
 ): Promise<PaginatedResponse<Incident>> {
   const query = params ? '?' + new URLSearchParams(params).toString() : '';
-  return apiClient.request(`/helpdesks/incidents/${query}`);
+  return apiClient.request(`/incidents/${query}`);
 }
 
 export async function getIncident(id: number): Promise<Incident> {
-  return apiClient.request(`/helpdesks/incidents/${id}/`);
+  return apiClient.request(`/incidents/${id}/`);
 }
 
 export async function createIncident(data: {
@@ -19,7 +19,7 @@ export async function createIncident(data: {
   due_date?: string;
   ticket_ids?: number[];
 }): Promise<Incident> {
-  return apiClient.request('/helpdesks/incidents/', {
+  return apiClient.request('/incidents/', {
     method: 'POST',
     body: JSON.stringify(data),
   });
@@ -29,7 +29,7 @@ export async function linkTickets(
   incidentId: number,
   ticket_ids: number[]
 ): Promise<Incident> {
-  return apiClient.request(`/helpdesks/incidents/${incidentId}/link/`, {
+  return apiClient.request(`/incidents/${incidentId}/link/`, {
     method: 'POST',
     body: JSON.stringify({ ticket_ids }),
   });
