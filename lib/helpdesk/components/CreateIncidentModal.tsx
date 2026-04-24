@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createIncident } from '../api/incident.api';
+import { ApiError } from '@/lib/shared/api/client';
 
 interface InitialValues {
   service: number;
@@ -66,8 +67,8 @@ export default function CreateIncidentModal({ open, onClose, onCreated, initialV
       });
       onCreated();
       onClose();
-    } catch {
-      setError('Error al crear el incidente');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Error al crear el incidente');
     } finally {
       setLoading(false);
     }
