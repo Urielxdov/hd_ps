@@ -15,8 +15,11 @@ export async function getIncident(id: number): Promise<Incident> {
 
 export async function createIncident(data: {
   service: number;
-  description_problema: string;
+  origin: 'error' | 'request' | 'inquiry' | 'maintenance';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  problem_description: string;
   due_date?: string;
+  estimated_hours?: number;
   ticket_ids?: number[];
 }): Promise<Incident> {
   return apiClient.request('/incidents/', {

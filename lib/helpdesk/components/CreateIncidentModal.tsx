@@ -3,6 +3,21 @@
 import { useState, useEffect } from 'react';
 import { createIncident } from '../api/incident.api';
 import { ApiError } from '@/lib/shared/api/client';
+import { getChoices, type Choices } from '@/lib/shared/api/choices';
+
+const ORIGIN_LABELS: Record<string, string> = {
+  error: 'Error',
+  request: 'Solicitud',
+  inquiry: 'Consulta',
+  maintenance: 'Mantenimiento',
+};
+
+const PRIORITY_LABELS: Record<string, string> = {
+  low: 'Baja',
+  medium: 'Media',
+  high: 'Alta',
+  critical: 'Crítica',
+};
 
 interface InitialValues {
   service: number;
@@ -20,20 +35,28 @@ interface Props {
 export default function CreateIncidentModal({ open, onClose, onCreated, initialValues }: Props) {
   const [service, setService] = useState('');
   const [description, setDescription] = useState('');
+  const [origin, setOrigin] = useState('error');
+  const [priority, setPriority] = useState('medium');
   const [dueDate, setDueDate] = useState('');
   const [ticketIds, setTicketIds] = useState('');
+  const [choices, setChoices] = useState<Choices | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (open && initialValues) {
-      setService(String(initialValues.service));
-      setTicketIds(initialValues.ticketIds.join(', '));
-      setDescription(initialValues.description ?? '');
+    if (open) {
+      getChoices().then(setChoices).catch(() => null);
+      if (initialValues) {
+        setService(String(initialValues.service));
+        setTicketIds(initialValues.ticketIds.join(', '));
+        setDescription(initialValues.description ?? '');
+      }
     }
     if (!open) {
       setService('');
       setDescription('');
+      setOrigin('error');
+      setPriority('medium');
       setDueDate('');
       setTicketIds('');
       setError(null);
@@ -61,7 +84,9 @@ export default function CreateIncidentModal({ open, onClose, onCreated, initialV
     try {
       await createIncident({
         service: serviceNum,
-        description_problema: description,
+        origin: origin as 'error' | 'request' | 'inquiry' | 'maintenance',
+        priority: priority as 'low' | 'medium' | 'high' | 'critical',
+        problem_description: description,
         ...(dueDate ? { due_date: new Date(dueDate).toISOString() } : {}),
         ...(ids.length > 0 ? { ticket_ids: ids } : {}),
       });
@@ -73,6 +98,9 @@ export default function CreateIncidentModal({ open, onClose, onCreated, initialV
       setLoading(false);
     }
   }
+
+  const originOptions = choices?.origin ?? ['error', 'request', 'inquiry', 'maintenance'];
+  const priorityOptions = choices?.priority ?? ['low', 'medium', 'high', 'critical'];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -93,6 +121,44 @@ export default function CreateIncidentModal({ open, onClose, onCreated, initialV
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Ej. 3"
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Origen <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={origin}
+                onChange={(e) => setOrigin(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {originOptions.map((o) => (
+                  <option key={o} value={o}>
+                    {ORIGIN_LABELS[o] ?? o}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Prioridad <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {priorityOptions.map((p) => (
+                  <option key={p} value={p}>
+                    {PRIORITY_LABELS[p] ?? p}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div>
