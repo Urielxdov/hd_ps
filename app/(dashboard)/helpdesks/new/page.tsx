@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
-import { createHelpDesk } from '@/lib/helpdesk';
+import { createHelpDesk, getIncidents } from '@/lib/helpdesk';
 import { useDepartmentList } from '@/lib/department';
 import { useServicesByDepartment } from '@/lib/catalog';
 import { classifyText, sendClassifyFeedback, type ClassifySuggestion } from '@/lib/classify';
@@ -28,10 +28,27 @@ export default function NuevoHelpDesk() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [createdId, setCreatedId] = useState<number | null>(null);
+  const [hasActiveIncident, setHasActiveIncident] = useState(false);
 
   const { services, loading: loadingServices } = useServicesByDepartment(
     departmentId ? Number(departmentId) : null
   );
+
+  const ACTIVE_STATUSES = ['open', 'in_progress', 'on_hold'];
+
+  useEffect(() => {
+    if (!serviceId) {
+      setHasActiveIncident(false);
+      return;
+    }
+    getIncidents({ service: serviceId })
+      .then((data) =>
+        setHasActiveIncident(
+          data.results.some((i) => ACTIVE_STATUSES.includes(i.master_ticket.status))
+        )
+      )
+      .catch(() => setHasActiveIncident(false));
+  }, [serviceId]);
 
   async function performClassify() {
     const text = description.trim();
@@ -136,6 +153,7 @@ export default function NuevoHelpDesk() {
             deptLoading={deptState.loading}
             services={services}
             servicesLoading={loadingServices}
+            hasActiveIncident={hasActiveIncident}
             error={error}
             isSubmitting={submitting}
             onSubmit={handleSubmit}

@@ -1,3 +1,4 @@
+import { AlertTriangle } from 'lucide-react';
 import type { ClassifySuggestion } from '@/lib/classify';
 import { IMPACT_LABELS } from '@/lib/helpdesk/types';
 import DescriptionField from './DescriptionField';
@@ -33,6 +34,7 @@ interface HelpDeskFormProps {
   deptLoading: boolean;
   services: Service[];
   servicesLoading: boolean;
+  hasActiveIncident: boolean;
   error: string;
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -58,6 +60,7 @@ export default function HelpDeskForm({
   deptLoading,
   services,
   servicesLoading,
+  hasActiveIncident,
   error,
   isSubmitting,
   onSubmit,
@@ -116,6 +119,16 @@ export default function HelpDeskForm({
           isLoading={servicesLoading}
           departmentId={departmentId}
         />
+
+        {/* Banner incidente activo */}
+        {hasActiveIncident && (
+          <div className="flex items-start gap-3 p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg">
+            <AlertTriangle size={18} className="text-amber-500 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-amber-800">
+              Este servicio tiene un incidente activo en atención. Tu ticket será vinculado automáticamente.
+            </p>
+          </div>
+        )}
 
         {/* Impacto heredado del servicio */}
         {selectedService && (
