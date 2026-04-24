@@ -3,14 +3,14 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/shared/api/client';
-import { login as apiLogin } from './api/auth.api';
+import { login as apiLogin, switchRole as apiSwitchRole, getMe } from './api/auth.api';
 import type { AuthUser, Role } from './types';
-import { ROLE_HOME, ROLE_HIERARCHY } from './types';
+import { ROLE_HOME } from './types';
 
 interface AuthContextType {
   user: AuthUser | null;
   activeRole: Role | null;
-  setActiveRole: (role: Role) => void;
+  switchRole: (role: Role | null) => Promise<void>;
   login: (userId: number, role: Role) => Promise<void>;
   logout: () => void;
   loading: boolean;
@@ -25,60 +25,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const stored = localStorage.getItem('auth_user');
+    const token = localStorage.getItem('auth_token');
 
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as AuthUser;
-        setUser(parsed);
-        apiClient.setToken(parsed.token ?? null);
-      } catch {
-        localStorage.removeItem('auth_user');
-        apiClient.setToken(null);
-      }
+    if (token) {
+      apiClient.setToken(token);
+      getMe()
+        .then(({ user_id, role, active_role }) => {
+          setUser({ user_id, role, token });
+          setActiveRoleState(active_role ?? role);
+        })
+        .catch(() => {
+          localStorage.removeItem('auth_token');
+          apiClient.setToken(null);
+        })
+        .finally(() => setLoading(false));
     } else {
       apiClient.setToken(null);
+      setLoading(false);
     }
-
-    setLoading(false);
   }, []);
 
-  useEffect(() => {
-    if (!loading) {
-      apiClient.setToken(user?.token ?? null);
-      setActiveRoleState(user?.role ?? null);
-    }
-  }, [user, loading]);
-
-  const setActiveRole = useCallback((role: Role) => {
-    if (!user) return;
-    if (role === user.role || ROLE_HIERARCHY[user.role].includes(role)) {
-      setActiveRoleState(role);
-    }
-  }, [user]);
+  const switchRole = useCallback(async (role: Role | null) => {
+    const { token, role: confirmedRole, active_role } = await apiSwitchRole(role);
+    localStorage.setItem('auth_token', token);
+    apiClient.setToken(token);
+    setUser((prev) => (prev ? { ...prev, token, role: confirmedRole } : null));
+    setActiveRoleState(active_role ?? confirmedRole);
+  }, []);
 
   const login = useCallback(async (userId: number, role: Role) => {
-    const response = await apiLogin(userId, role);
-    console.log('LOGIN RESPONSE =>', response);
+    const { access: token } = await apiLogin(userId, role);
 
-    const token = response.access;
-    const authUser: AuthUser = { user_id: userId, role, token };
-
-    localStorage.setItem('auth_user', JSON.stringify(authUser));
+    localStorage.setItem('auth_token', token);
     apiClient.setToken(token);
-    setUser(authUser);
-    router.push(ROLE_HOME[role]);
+
+    const { user_id, role: confirmedRole, active_role } = await getMe();
+    setUser({ user_id, role: confirmedRole, token });
+    setActiveRoleState(active_role ?? confirmedRole);
+    router.push(ROLE_HOME[confirmedRole]);
   }, [router]);
 
   const logout = useCallback(() => {
-    localStorage.removeItem('auth_user');
+    localStorage.removeItem('auth_token');
     apiClient.setToken(null);
     setUser(null);
+    setActiveRoleState(null);
     router.push('/login');
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ user, activeRole, setActiveRole, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, activeRole, switchRole, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

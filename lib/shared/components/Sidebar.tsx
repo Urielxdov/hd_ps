@@ -42,7 +42,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export default function Sidebar() {
-  const { user, activeRole, setActiveRole, logout } = useAuth();
+  const { user, activeRole, switchRole, logout } = useAuth();
   const pathname = usePathname();
   const { collapsed, setCollapsed } = useSidebar();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -67,8 +67,8 @@ export default function Sidebar() {
   const canSwitch = ROLE_HIERARCHY[user.role].length > 0;
   const visibleItems = NAV_ITEMS.filter((item) => item.roles.includes(activeRole));
 
-  function handleRoleSelect(role: Role) {
-    setActiveRole(role);
+  async function handleRoleSelect(role: Role) {
+    await switchRole(role);
     setSwitcherOpen(false);
   }
 
