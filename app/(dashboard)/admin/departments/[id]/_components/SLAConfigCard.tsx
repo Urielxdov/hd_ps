@@ -19,6 +19,7 @@ type SLAForm = {
   score_high: number;
   score_medium: number;
   score_low: number;
+  incident_threshold: number;
 };
 
 const SLA_DEFAULTS: SLAForm = {
@@ -33,6 +34,7 @@ const SLA_DEFAULTS: SLAForm = {
   score_high: 30,
   score_medium: 20,
   score_low: 10,
+  incident_threshold: 0,
 };
 
 const inputClass = 'w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
@@ -66,6 +68,7 @@ export default function SLAConfigCard({ departmentId }: Props) {
             score_high: existing.score_high,
             score_medium: existing.score_medium,
             score_low: existing.score_low,
+            incident_threshold: existing.incident_threshold ?? 0,
           });
         } else {
           setSla(null);
@@ -116,6 +119,15 @@ export default function SLAConfigCard({ departmentId }: Props) {
             <div className="max-w-xs">
               <FormField label="Máx. tickets simultáneos por técnico">
                 <NumberInput min="1" value={form.max_load} onChange={(e) => updateField('max_load', e.target.value)} />
+              </FormField>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-slate-600 mb-2">Umbral de incidentes</h3>
+            <div className="max-w-xs">
+              <FormField label="Tickets abiertos para detectar incidente (0 = usar default global)">
+                <NumberInput min="0" value={form.incident_threshold} onChange={(e) => updateField('incident_threshold', e.target.value)} />
               </FormField>
             </div>
           </div>

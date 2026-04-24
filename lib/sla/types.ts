@@ -38,6 +38,7 @@ export interface SLAConfig {
   score_high: number;
   score_medium: number;
   score_low: number;
+  incident_threshold: number;
 }
 
 export interface ServiceQueueEntry {

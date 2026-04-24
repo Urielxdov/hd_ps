@@ -30,6 +30,10 @@ export function useHelpDeskList() {
         params.assignee_id = state.filters.assignee_id;
       }
 
+      if (state.filters.department) {
+        params.department = state.filters.department;
+      }
+
       const data = await getHelpDesks(params);
 
       dispatch({ type: 'LOAD_SUCCESS', payload: data });
@@ -46,6 +50,7 @@ export function useHelpDeskList() {
     state.filters.status,
     state.filters.priority,
     state.filters.assignee_id,
+    state.filters.department,
   ]);
 
   useEffect(() => {

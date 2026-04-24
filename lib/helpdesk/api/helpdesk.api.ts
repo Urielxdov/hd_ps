@@ -95,6 +95,13 @@ export async function deleteAttachment(
   });
 }
 
+export async function getMonitor(
+  params?: Record<string, string>
+): Promise<import('../types').MonitorResponse> {
+  const query = params ? '?' + new URLSearchParams(params).toString() : '';
+  return apiClient.request(`/helpdesks/monitor/${query}`);
+}
+
 export async function getComments(helpDeskId: number): Promise<HDComment[]> {
   return apiClient.request(`/helpdesks/${helpDeskId}/comments/`);
 }

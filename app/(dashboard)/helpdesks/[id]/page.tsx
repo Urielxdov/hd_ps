@@ -6,7 +6,7 @@ import {
   closeHelpDesk,
   StatusBadge, StatusStepper,
   CommentThread, AttachmentUploader,
-  HelpDeskInfo,
+  HelpDeskInfo, MasterTicketBanner,
 } from '@/lib/helpdesk';
 
 export default function DetalleHelpDesk({ params }: { params: Promise<{ id: string }> }) {
@@ -42,6 +42,8 @@ export default function DetalleHelpDesk({ params }: { params: Promise<{ id: stri
       </div>
 
       <StatusStepper status={hd.status} />
+
+      {hd.incident && <MasterTicketBanner incident={hd.incident} />}
 
       {hd.status === 'resolved' && hd.service_client_close && (
         <div className="flex justify-end">

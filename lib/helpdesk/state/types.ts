@@ -7,6 +7,7 @@ export type HelpDeskFilters = {
   status: Status | string;
   priority: Priority | string;
   assignee_id: string;
+  department: string;
 };
 
 export type HelpDeskListState = {

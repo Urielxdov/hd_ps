@@ -11,5 +11,6 @@ export const helpDeskListInitialState: HelpDeskListState = {
     status: '',
     priority: '',
     assignee_id: '',
+    department: '',
   },
 };

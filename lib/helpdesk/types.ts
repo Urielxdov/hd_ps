@@ -52,6 +52,24 @@ export interface HDComment {
   created_at: string;
 }
 
+// Referencia al incidente desde un ticket hijo
+export interface IncidentRef {
+  id: number;
+  master_folio: string;
+  master_status: Status;
+  master_description: string;
+  master_due_date: string | null;
+}
+
+// Ticket hijo dentro de un Incident
+export interface LinkedTicket {
+  id: number;
+  folio: string;
+  requester_id: number;
+  status: Status;
+  assigned_at: string | null;
+}
+
 export interface HelpDesk {
   id: number;
   folio: string;
@@ -73,4 +91,31 @@ export interface HelpDesk {
   attachments: HDAttachment[];
   created_at: string;
   updated_at: string;
+  incident: IncidentRef | null;
+}
+
+export interface MonitorCandidate {
+  service_id: number;
+  service_name: string;
+  department_id: number;
+  department_name: string;
+  open_tickets: number;
+  threshold: number;
+  ticket_ids: number[];
+  folios: string[];
+}
+
+export interface MonitorResponse {
+  system_default_threshold: number;
+  total_active_unlinked: number;
+  candidates: MonitorCandidate[];
+}
+
+export interface Incident {
+  id: number;
+  master_ticket: HelpDesk;
+  linked_tickets: LinkedTicket[];
+  linked_tickets_count: number;
+  created_by_id: number;
+  created_at: string;
 }

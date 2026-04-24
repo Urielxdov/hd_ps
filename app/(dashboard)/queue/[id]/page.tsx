@@ -7,7 +7,7 @@ import {
   STATUS_LABELS,
   StatusBadge, StatusStepper,
   CommentThread, AttachmentUploader, ResolveModal,
-  HelpDeskInfo,
+  HelpDeskInfo, MasterTicketBanner,
   type Status,
 } from '@/lib/helpdesk';
 
@@ -37,6 +37,7 @@ export default function DetalleTecnico({ params }: { params: Promise<{ id: strin
     return <p className="text-center text-slate-500 py-12">Ticket no encontrado</p>;
   }
 
+  const isLinkedToIncident = !!hd.incident;
   const transitions = getValidTransitions(hd.status).filter((s) => s !== 'resolved' && s !== 'closed');
   const canResolve = hd.status === 'in_progress' || hd.status === 'on_hold';
   const canEditResolution = hd.status === 'resolved';
@@ -52,33 +53,37 @@ export default function DetalleTecnico({ params }: { params: Promise<{ id: strin
 
       <StatusStepper status={hd.status} />
 
-      <div className="flex gap-2">
-        {transitions.map((s) => (
-          <button
-            key={s}
-            onClick={() => handleStatusChange(s)}
-            className="cursor-pointer px-4 py-2 bg-white border border-slate-300 text-sm rounded-lg hover:bg-slate-50 transition-colors"
-          >
-            Cambiar a {STATUS_LABELS[s]}
-          </button>
-        ))}
-        {canResolve && (
-          <button
-            onClick={() => setResolveOpen(true)}
-            className="cursor-pointer px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Resolver
-          </button>
-        )}
-        {canEditResolution && (
-          <button
-            onClick={() => setResolveOpen(true)}
-            className="cursor-pointer px-4 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
-          >
-            Cambiar resolución
-          </button>
-        )}
-      </div>
+      {hd.incident && <MasterTicketBanner incident={hd.incident} />}
+
+      {!isLinkedToIncident && (
+        <div className="flex gap-2">
+          {transitions.map((s) => (
+            <button
+              key={s}
+              onClick={() => handleStatusChange(s)}
+              className="cursor-pointer px-4 py-2 bg-white border border-slate-300 text-sm rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              Cambiar a {STATUS_LABELS[s]}
+            </button>
+          ))}
+          {canResolve && (
+            <button
+              onClick={() => setResolveOpen(true)}
+              className="cursor-pointer px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Resolver
+            </button>
+          )}
+          {canEditResolution && (
+            <button
+              onClick={() => setResolveOpen(true)}
+              className="cursor-pointer px-4 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
+            >
+              Cambiar resolución
+            </button>
+          )}
+        </div>
+      )}
 
       <HelpDeskInfo hd={hd} showRequester />
 

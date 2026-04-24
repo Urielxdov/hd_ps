@@ -98,6 +98,18 @@ export default function PanelArea() {
             className="w-24 px-2 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
+
+        <div>
+          <label className="block text-xs text-slate-500 mb-1">Departamento (ID)</label>
+          <input
+            type="number"
+            min="1"
+            value={state.filters.department}
+            onChange={(e) => setFilter('department', e.target.value)}
+            placeholder="Todos"
+            className="w-28 px-2 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
       </div>
 
       {state.loading ? (
