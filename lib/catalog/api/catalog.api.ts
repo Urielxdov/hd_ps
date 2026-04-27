@@ -62,3 +62,13 @@ export async function updateService(
 export async function toggleService(id: number): Promise<Service> {
   return apiClient.request(`/services/${id}/toggle/`, { method: 'PATCH' });
 }
+
+// Keywords
+export async function createServiceKeyword(
+  data: { service: number; keyword: string; weight: number }
+): Promise<void> {
+  return apiClient.request('/service-keywords/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}

@@ -2,6 +2,7 @@
 export {
   getDepartmentCategories, createServiceCategory, updateServiceCategory,
   getDepartmentServices, getCategoryServices, createService, updateService, toggleService,
+  createServiceKeyword,
 } from './api/catalog.api';
 
 // Hooks
