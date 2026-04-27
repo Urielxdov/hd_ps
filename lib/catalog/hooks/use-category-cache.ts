@@ -5,12 +5,25 @@ import { getDepartmentCategories } from '../api/catalog.api';
 import { categoryCacheInitialState, categoryCacheReducer } from '../state/category-reducer';
 import type { ServiceCategory } from '../types';
 
+/**
+ * Caché de categorías indexado por departamento.
+ *
+ * Evita peticiones redundantes al backend: si las categorías de un
+ * departamento ya están en estado, `loadByDept` retorna sin hacer fetch.
+ * Los métodos `addItem`, `updateItem` y `removeItem` permiten reflejar
+ * cambios CRUD en el estado local sin necesidad de recargar desde el servidor.
+ */
 export function useCategoryCache() {
   const [state, dispatch] = useReducer(
     categoryCacheReducer,
     categoryCacheInitialState
   );
 
+  /**
+   * Carga las categorías de un departamento si aún no están en caché.
+   * La comprobación es por existencia de la clave — un array vacío
+   * se considera cargado y no genera una nueva petición.
+   */
   const loadByDept = useCallback(
     async (deptId: number) => {
       if (state.items[deptId]) return;
@@ -44,6 +57,7 @@ export function useCategoryCache() {
     dispatch({ type: 'UPDATE_ITEM', payload: item });
   }, []);
 
+  /** Elimina una categoría del estado local. Solo usar tras confirmar la desactivación en el backend. */
   const removeItem = useCallback((deptId: number, id: number) => {
     dispatch({ type: 'REMOVE_ITEM', payload: { deptId, id } });
   }, []);

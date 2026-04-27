@@ -64,8 +64,8 @@ export default function GestionCatalogo() {
   }
 
   async function handleToggleService(svc: Service) {
-    await toggleService(svc.id);
-    await reloadServices(svc.category);
+    const updated = await toggleService(svc.id);
+    svcDispatch({ type: 'UPDATE_ITEM', payload: updated });
   }
 
   if (deptState.loading) {

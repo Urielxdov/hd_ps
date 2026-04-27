@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/shared/api/client';
-import type { ServiceCategory, Service } from '../types';
+import type { ServiceCategory, Service, ServiceImpact } from '../types';
 
 // ─── Categorías ───────────────────────────────────────────────────────────────
 
@@ -90,7 +90,7 @@ export async function getService(id: number): Promise<Service> {
  * @param data.impact          - Alcance del impacto: individual | area | company.
  */
 export async function createService(
-  data: { name: string; description: string; category: number; estimated_hours: number; client_close: boolean; impact: string }
+  data: { name: string; description: string; category: number; estimated_hours: number; client_close: boolean; impact: ServiceImpact }
 ): Promise<Service> {
   return apiClient.request('/services/', {
     method: 'POST',
@@ -113,16 +113,6 @@ export async function updateService(
     method: 'PATCH',
     body: JSON.stringify(data),
   });
-}
-
-/**
- * Elimina permanentemente un servicio.
- * No hay soft-delete — usar con precaución.
- *
- * @param id - ID del servicio a eliminar.
- */
-export async function deleteService(id: number): Promise<void> {
-  return apiClient.request(`/services/${id}/`, { method: 'DELETE' });
 }
 
 /**
