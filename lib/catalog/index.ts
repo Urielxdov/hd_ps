@@ -1,8 +1,8 @@
 // API
 export {
   getDepartmentCategories, createServiceCategory, updateServiceCategory,
-  getDepartmentServices, getCategoryServices, createService, updateService, toggleService,
-  createServiceKeyword,
+  getDepartmentServices, getCategoryServices, getService, createService, updateService,
+  deleteService, toggleService, getServiceKeywords, createServiceKeyword,
 } from './api/catalog.api';
 
 // Hooks
