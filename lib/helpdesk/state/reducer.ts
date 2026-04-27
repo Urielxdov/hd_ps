@@ -1,5 +1,15 @@
 import type { HelpDeskListAction, HelpDeskListState } from './types';
 
+/**
+ * Reducer del listado paginado de tickets.
+ *
+ * `LOAD_SUCCESS` mapea `results` de la respuesta paginada del backend
+ * a `items` en el estado local — el resto de campos de paginación
+ * (`count`, `next`, `previous`) se preservan para navegación futura.
+ *
+ * `UPDATE_ITEM` permite reflejar cambios en un ticket (estado, asignación,
+ * resolución) sin recargar toda la lista desde el backend.
+ */
 export function helpDeskListReducer(
   state: HelpDeskListState,
   action: HelpDeskListAction
