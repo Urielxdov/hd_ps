@@ -6,6 +6,15 @@ export const categoryCacheInitialState: CategoryCacheState = {
   error: {},
 };
 
+/**
+ * Reducer de caché de categorías indexado por departamento.
+ *
+ * `ADD_ITEM` prepend al inicio de la lista para que la categoría recién
+ * creada aparezca primera sin necesidad de reordenar.
+ *
+ * `UPDATE_ITEM` recorre todos los departamentos en estado para localizar
+ * la categoría por `id` — necesario porque el payload no incluye `deptId`.
+ */
 export function categoryCacheReducer(
   state: CategoryCacheState,
   action: CategoryCacheAction

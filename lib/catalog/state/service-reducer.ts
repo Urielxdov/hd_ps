@@ -6,6 +6,14 @@ export const serviceCacheInitialState: ServiceCacheState = {
   error: {},
 };
 
+/**
+ * Reducer de caché de servicios indexado por categoría.
+ *
+ * Mismo patrón que `categoryCacheReducer`.
+ * `UPDATE_ITEM` recorre todas las categorías en estado — se usa tras un
+ * toggle para actualizar `active` en local sin refetch, manteniendo el
+ * servicio visible en la lista independientemente de su estado.
+ */
 export function serviceCacheReducer(
   state: ServiceCacheState,
   action: ServiceCacheAction
