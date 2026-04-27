@@ -1,3 +1,11 @@
+/**
+ * Módulo de helpdesk: corazón del sistema.
+ *
+ * Expone dominio (transiciones), API (tickets e incidentes), hooks,
+ * componentes y tipos. El resto del sistema no debe importar directamente
+ * desde subcarpetas — todo pasa por este índice.
+ */
+
 // Domain
 export { canTransition, getValidTransitions } from './domain/transitions';
 
@@ -34,5 +42,5 @@ export { default as LinkTicketsModal } from './components/LinkTicketsModal';
 export { default as IncidentMonitor } from './components/IncidentMonitor';
 
 // Types
-export type { HelpDesk, HDComment, HDAttachment, Status, Priority, Origin, AttachmentType, IncidentRef, LinkedTicket, Incident, MonitorCandidate, MonitorResponse } from './types';
-export { STATUS_LABELS, PRIORITY_LABELS, ORIGIN_LABELS } from './types';
+export type { HelpDesk, HDComment, HDAttachment, Status, Priority, Origin, Impact, AttachmentType, IncidentRef, LinkedTicket, Incident, MonitorCandidate, MonitorResponse } from './types';
+export { STATUS_LABELS, PRIORITY_LABELS, ORIGIN_LABELS, IMPACT_LABELS } from './types';
