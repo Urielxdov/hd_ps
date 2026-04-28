@@ -8,6 +8,7 @@ interface ResolveModalProps {
   open: boolean;
   onClose: () => void;
   helpDeskId: number;
+  /** Callback tras resolución exitosa — el padre decide si recargar o hacer UPDATE_ITEM. */
   onResolved: () => void;
 }
 

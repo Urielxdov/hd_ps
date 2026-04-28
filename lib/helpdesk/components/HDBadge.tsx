@@ -16,6 +16,7 @@ const PRIORITY_COLORS: Record<Priority, string> = {
   critical: 'bg-red-100 text-red-700',
 };
 
+/** Pill con color y etiqueta del estado del ticket. */
 export function StatusBadge({ status }: { status: Status }) {
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[status]}`}>
@@ -24,6 +25,7 @@ export function StatusBadge({ status }: { status: Status }) {
   );
 }
 
+/** Pill con color y etiqueta de la prioridad del ticket. */
 export function PriorityBadge({ priority }: { priority: Priority }) {
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${PRIORITY_COLORS[priority]}`}>

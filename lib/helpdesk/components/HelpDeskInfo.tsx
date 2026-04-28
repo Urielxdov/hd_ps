@@ -4,7 +4,19 @@ import { PriorityBadge } from './HDBadge';
 
 interface HelpDeskInfoProps {
   hd: HelpDesk;
+  /**
+   * Muestra el campo de solicitante. Se activa en la vista de técnico/admin
+   * — los usuarios no lo ven porque es información redundante para ellos.
+   *
+   * @todo Mostrar nombre en lugar de ID una vez integrado el sistema de usuarios corporativo.
+   */
   showRequester?: boolean;
+  /**
+   * Muestra el campo de técnico asignado. Se activa en la vista del solicitante
+   * — los técnicos no lo ven porque saben que el ticket está en su cola.
+   *
+   * @todo Mostrar nombre en lugar de ID una vez integrado el sistema de usuarios corporativo.
+   */
   showAssignee?: boolean;
 }
 

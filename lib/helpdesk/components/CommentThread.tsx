@@ -6,6 +6,11 @@ import { getComments, addComment } from '../api/helpdesk.api';
 
 interface CommentThreadProps {
   helpDeskId: number;
+  /**
+   * Muestra el checkbox "Comentario interno" en el formulario.
+   * Solo se activa para técnicos y admins — los solicitantes
+   * no pueden crear ni ver comentarios internos.
+   */
   showInternal?: boolean;
 }
 

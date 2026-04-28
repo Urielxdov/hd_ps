@@ -6,7 +6,12 @@ import { uploadAttachment, addUrlAttachment, deleteAttachment } from '../api/hel
 
 interface AttachmentUploaderProps {
   helpDeskId: number;
+  /** Lista de adjuntos actuales del ticket — el padre los provee desde `hd.attachments`. */
   attachments: HDAttachment[];
+  /**
+   * Callback tras agregar o eliminar un adjunto.
+   * El padre llama a `reload()` del hook para refrescar el ticket completo.
+   */
   onUpdate: () => void;
 }
 

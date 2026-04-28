@@ -1,8 +1,17 @@
 import type { Status } from '../types';
 import { STATUS_LABELS } from '../types';
 
+/**
+ * Flujo lineal visible en el stepper. `on_hold` se omite deliberadamente
+ * porque no es un paso propio — es una pausa dentro de `in_progress`.
+ * Se muestra como badge lateral cuando el ticket está en ese estado.
+ */
 const STEPS: Status[] = ['open', 'in_progress', 'resolved', 'closed'];
 
+/**
+ * `on_hold` comparte índice con `in_progress` para que el stepper
+ * marque ese paso como activo mientras el ticket está en pausa.
+ */
 const STEP_INDEX: Record<Status, number> = {
   open: 0,
   in_progress: 1,

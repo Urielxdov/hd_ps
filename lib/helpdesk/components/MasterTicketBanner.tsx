@@ -10,8 +10,10 @@ interface Props {
 }
 
 export default function MasterTicketBanner({ incident }: Props) {
-  const { user } = useAuth();
-  const canViewIncident = user?.role === 'area_admin' || user?.role === 'super_admin';
+  const { activeRole } = useAuth();
+  // Usa activeRole (no el rol real) para respetar el switch de rol —
+  // un admin impersonando técnico debe ver la vista de técnico completa.
+  const canViewIncident = activeRole === 'area_admin' || activeRole === 'super_admin';
 
   return (
     <div className="flex items-start gap-3 p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg">

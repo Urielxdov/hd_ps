@@ -8,10 +8,22 @@ import { StatusBadge, PriorityBadge } from './HDBadge';
 
 interface HDTableProps {
   helpdesks: HelpDesk[];
+  /**
+   * Prefijo de ruta para el link del folio. Varía según el rol:
+   * usuarios van a `/helpdesks`, técnicos a `/queue`.
+   */
   basePath: string;
+  /** Muestra la columna de técnico asignado. */
   showTechnician?: boolean;
+  /** Muestra la columna de prioridad. */
   showPriority?: boolean;
+  /**
+   * Si se provee, muestra un select de cambio rápido de estado en cada fila.
+   * Las opciones se calculan con `getValidTransitions` — solo estados válidos.
+   * El select se resetea a `""` tras la selección para evitar estado visual residual.
+   */
   onQuickStatusChange?: (id: number, newStatus: Status) => void;
+  /** Render prop para personalizar la celda del técnico asignado. */
   technicianSelector?: (hd: HelpDesk) => React.ReactNode;
 }
 

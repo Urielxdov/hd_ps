@@ -68,7 +68,7 @@ export default function Sidebar() {
   const visibleItems = NAV_ITEMS.filter((item) => item.roles.includes(activeRole));
 
   async function handleRoleSelect(role: Role) {
-    await switchRole(role);
+    await switchRole(role === user!.role ? null : role);
     setSwitcherOpen(false);
   }
 

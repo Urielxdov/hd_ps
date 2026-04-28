@@ -8,7 +8,14 @@ interface AssignModalProps {
   open: boolean;
   onClose: () => void;
   helpDeskId: number;
+  /** Callback tras asignación exitosa — el padre decide si recargar o hacer UPDATE_ITEM. */
   onAssigned: () => void;
+  /**
+   * Pre-rellena el input cuando ya hay un técnico asignado (reasignación).
+   *
+   * @todo Reemplazar el input de ID manual por un selector de usuarios
+   * una vez integrado el sistema corporativo.
+   */
   currentAssigneeId?: number | null;
 }
 
