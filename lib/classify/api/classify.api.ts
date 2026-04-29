@@ -12,6 +12,9 @@ export interface ClassifySuggestion {
 
 export interface ClassifyResponse {
   suggestions: ClassifySuggestion[];
+  top_score: number;
+  should_escalate: boolean;
+  escalation_reason: string | null;
 }
 
 export async function classifyText(text: string): Promise<ClassifyResponse> {
