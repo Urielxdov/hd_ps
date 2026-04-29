@@ -21,11 +21,14 @@ export async function classifyText(text: string): Promise<ClassifyResponse> {
   });
 }
 
+export type ClassifyOutcome = 'accept' | 'reject' | 'no_action';
+
 export async function sendClassifyFeedback(data: {
   problem_description: string;
   suggested_service: number | null;
   chosen_service: number;
-  accepted: boolean;
+  outcome: ClassifyOutcome;
+  suggestion_shown_at?: string;
 }): Promise<void> {
   return apiClient.request('/classify/feedback/', {
     method: 'POST',

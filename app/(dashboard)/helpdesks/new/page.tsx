@@ -20,6 +20,7 @@ export default function NuevoHelpDesk() {
   const [classifying, setClassifying] = useState(false);
   const [hasClassified, setHasClassified] = useState(false);
   const [suggestion, setSuggestion] = useState<ClassifySuggestion | null>(null);
+  const [suggestionShownAt, setSuggestionShownAt] = useState<string | null>(null);
   const [locked, setLocked] = useState(false);
   const [showOverrideModal, setShowOverrideModal] = useState(false);
 
@@ -63,10 +64,12 @@ export default function NuevoHelpDesk() {
       const top = suggestions.filter((s) => s.score > 0).sort((a, b) => b.score - a.score)[0] ?? null;
       setSuggestion(top);
       if (top) {
+        setSuggestionShownAt(new Date().toISOString());
         setDepartmentId(String(top.department_id));
         setServiceId(String(top.service_id));
         setLocked(true);
       } else {
+        setSuggestionShownAt(null);
         setDepartmentId('');
         setServiceId('');
       }
@@ -81,6 +84,7 @@ export default function NuevoHelpDesk() {
   function handleDescriptionChange(value: string) {
     setDescription(value);
     setHasClassified(false);
+    setSuggestionShownAt(null);
   }
 
   function handleOverrideConfirm() {
@@ -107,11 +111,22 @@ export default function NuevoHelpDesk() {
         impact: selectedService?.impact ?? 'individual',
       });
 
+      const chosenServiceId = Number(serviceId);
+      let outcome: 'accept' | 'reject' | 'no_action';
+      if (locked) {
+        outcome = 'accept';
+      } else if (suggestion && chosenServiceId === suggestion.service_id) {
+        outcome = 'no_action';
+      } else {
+        outcome = 'reject';
+      }
+
       await sendClassifyFeedback({
         problem_description: description.trim(),
         suggested_service: suggestion?.service_id ?? null,
-        chosen_service: Number(serviceId),
-        accepted: locked,
+        chosen_service: chosenServiceId,
+        outcome,
+        ...(suggestionShownAt && { suggestion_shown_at: suggestionShownAt }),
       });
 
       setCreatedId(hd.id);
