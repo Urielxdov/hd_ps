@@ -44,7 +44,7 @@ export function helpDeskListReducer(
     case 'RESET_FILTERS':
       return {
         ...state,
-        filters: { status: '', priority: '', assignee_id: '', department: '' },
+        filters: { status: '', priority: '', assignee_id: '', department: '', service: '' },
       };
 
     case 'UPDATE_ITEM':

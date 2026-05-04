@@ -1,6 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
 import { HDTable, useHelpDeskList } from '@/lib/helpdesk';
+import { useDepartmentList } from '@/lib/department';
+import { useServicesByDepartment } from '@/lib/catalog';
 
 const STATUS_FILTERS = [
   { value: '', label: 'Todos' },
@@ -19,8 +22,19 @@ const PRIORITY_FILTERS = [
   { value: 'critical', label: 'Critica' },
 ];
 
+const selectClass =
+  'px-2 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white';
+
 export default function PanelArea() {
   const { state, setFilter } = useHelpDeskList();
+  const { state: deptState } = useDepartmentList();
+
+  const selectedDeptId = state.filters.department ? Number(state.filters.department) : null;
+  const { services, loading: servicesLoading } = useServicesByDepartment(selectedDeptId);
+
+  useEffect(() => {
+    setFilter('service', '');
+  }, [state.filters.department]);
 
   const hoy = new Date().toDateString();
   const abiertos = state.items.filter((h) => h.status === 'open').length;
@@ -100,15 +114,37 @@ export default function PanelArea() {
         </div>
 
         <div>
-          <label className="block text-xs text-slate-500 mb-1">Departamento (ID)</label>
-          <input
-            type="number"
-            min="1"
+          <label className="block text-xs text-slate-500 mb-1">Departamento</label>
+          <select
             value={state.filters.department}
             onChange={(e) => setFilter('department', e.target.value)}
-            placeholder="Todos"
-            className="w-28 px-2 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
+            className={selectClass}
+            disabled={deptState.loading}
+          >
+            <option value="">Todos</option>
+            {deptState.items.map((d) => (
+              <option key={d.id} value={String(d.id)}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs text-slate-500 mb-1">Servicio</label>
+          <select
+            value={state.filters.service}
+            onChange={(e) => setFilter('service', e.target.value)}
+            className={selectClass}
+            disabled={!selectedDeptId || servicesLoading}
+          >
+            <option value="">Todos</option>
+            {services.map((s) => (
+              <option key={s.id} value={String(s.id)}>
+                {s.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 

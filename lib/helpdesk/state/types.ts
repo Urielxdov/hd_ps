@@ -22,6 +22,7 @@ export type HelpDeskFilters = {
   priority: Priority | string;
   assignee_id: string;
   department: string;
+  service: string;
 };
 
 /** Estado del listado paginado de tickets con filtros activos. */
