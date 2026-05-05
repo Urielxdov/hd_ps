@@ -5,7 +5,7 @@ import Modal from '@/lib/shared/components/Modal';
 import FormField, { TextInput, NumberInput, TextareaInput } from '@/lib/shared/components/FormField';
 import CheckboxField from '@/lib/shared/components/CheckboxField';
 import FormActions from '@/lib/shared/components/FormActions';
-import { createService, updateService, createServiceKeyword, getServiceKeywords, type Service } from '@/lib/catalog';
+import { createService, updateService, createServiceKeyword, getServiceKeywords, type Service, type ServiceImpact } from '@/lib/catalog';
 import { getChoices } from '@/lib/shared/api/choices';
 
 interface Props {
@@ -84,7 +84,7 @@ export default function ServiceModal({ open, onClose, catId, editing, onSaved }:
         category: catId,
         estimated_hours: Number(hours),
         client_close: clientClose,
-        impact,
+        impact: impact as ServiceImpact,
       };
       if (editing) {
         await updateService(editing.id, data);
