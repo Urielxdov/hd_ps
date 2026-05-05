@@ -27,19 +27,15 @@ export default function GestionCatalogo() {
     open: false, catId: 0,
   });
 
-  useEffect(() => {
-    if (selectedDeptId === null && deptState.items.length > 0) {
-      setSelectedDeptId(deptState.items[0].id);
-    }
-  }, [deptState.items, selectedDeptId]);
+  const effectiveDeptId = selectedDeptId ?? deptState.items[0]?.id ?? null;
 
   useEffect(() => {
-    if (selectedDeptId !== null) loadByDept(selectedDeptId);
-  }, [selectedDeptId, loadByDept]);
+    if (effectiveDeptId !== null) loadByDept(effectiveDeptId);
+  }, [effectiveDeptId, loadByDept]);
 
   const categories = useMemo(
-    () => (selectedDeptId !== null ? catState.items[selectedDeptId] || [] : []),
-    [selectedDeptId, catState.items]
+    () => (effectiveDeptId !== null ? catState.items[effectiveDeptId] || [] : []),
+    [effectiveDeptId, catState.items]
   );
 
   useEffect(() => {
@@ -51,7 +47,7 @@ export default function GestionCatalogo() {
     [categories, svcState.items]
   );
 
-  const selectedDept = deptState.items.find((d) => d.id === selectedDeptId);
+  const selectedDept = deptState.items.find((d) => d.id === effectiveDeptId);
 
   async function reloadCategories(deptId: number) {
     const items = await getDepartmentCategories(deptId);
@@ -76,13 +72,13 @@ export default function GestionCatalogo() {
     );
   }
 
-  const catsLoading = selectedDeptId !== null && catState.loading[selectedDeptId];
+  const catsLoading = effectiveDeptId !== null && catState.loading[effectiveDeptId];
 
   return (
     <div className="flex gap-6 h-[calc(100vh-3rem)]">
       <DepartmentSidebar
         departments={deptState.items}
-        selectedId={selectedDeptId}
+        selectedId={effectiveDeptId}
         onSelect={setSelectedDeptId}
       />
 
