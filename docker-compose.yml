@@ -3,5 +3,6 @@ services:
     build: .
     environment:
       BACKEND_URL: ${BACKEND_URL:-http://localhost:8000}
+      HOSTNAME: ${HOSTNAME:-0.0.0.0}
     ports:
       - "3000:3000"
