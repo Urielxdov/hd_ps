@@ -1,6 +1,4 @@
-const API_BASE = typeof window === 'undefined'
-  ? `${process.env.BACKEND_URL || 'http://localhost:8000'}/api`
-  : '/api';
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api`;
 
 class ApiClient {
   private token: string | null = null;
