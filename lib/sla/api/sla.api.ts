@@ -15,7 +15,7 @@ export async function createTechnicianProfile(
     data: Pick<TechnicianProfile, 'user_id' | 'department' | 'active'>
   ): Promise<TechnicianProfile> {                                                    
     console.log(data)              
-    const res = await apiClient.request('/technician-profiles/', {
+    const res = await apiClient.request<TechnicianProfile>('/technician-profiles/', {
       method: 'POST',                                                                              
       body: JSON.stringify(data),                           
     });                                                                                            
